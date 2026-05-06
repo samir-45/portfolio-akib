@@ -19,6 +19,7 @@ export const projects = pgTable("projects", {
   impact: text("impact"),
   imageUrl: text("image_url"),
   iconColor: text("icon_color").default("#2b7fff"),
+  iconUrl: text("icon_url"),
   isFeatured: boolean("is_featured").default(false),
   sortOrder: integer("sort_order").default(0),
   role: text("role"),
@@ -78,7 +79,6 @@ export const siteSettings = pgTable("site_settings", {
   value: jsonb("value"),
 });
 
-// Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({ username: true, password: true });
 export const insertProjectSchema = createInsertSchema(projects).omit({ id: true, createdAt: true });
 export const insertPlaygroundItemSchema = createInsertSchema(playgroundItems).omit({ id: true, createdAt: true });
@@ -87,7 +87,6 @@ export const insertTestimonialSchema = createInsertSchema(testimonials).omit({ i
 export const insertContactMessageSchema = createInsertSchema(contactMessages).omit({ id: true, isRead: true, createdAt: true });
 export const insertSiteSettingSchema = createInsertSchema(siteSettings).omit({ id: true });
 
-// Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Project = typeof projects.$inferSelect;

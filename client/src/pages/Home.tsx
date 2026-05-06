@@ -21,9 +21,15 @@ function ProjectCard({ project }: { project: Project }) {
         <div className="flex flex-col justify-between p-8 xl:p-12">
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-3">
-              <div className={`h-10 w-10 rounded-xl ${bgColor} flex items-center justify-center`}>
-                <span className="text-white text-xs font-bold">{project.category.charAt(0)}</span>
-              </div>
+              {project.iconUrl ? (
+                <div className="h-10 w-10 rounded-xl border border-border bg-muted/20 p-1.5 flex items-center justify-center overflow-hidden">
+                  <img src={project.iconUrl} alt={`${project.title} icon`} className="h-full w-full object-contain" />
+                </div>
+              ) : (
+                <div className={`h-10 w-10 rounded-xl ${bgColor} flex items-center justify-center`}>
+                  <span className="text-white text-xs font-bold">{project.category.charAt(0)}</span>
+                </div>
+              )}
               <span className="text-sm text-muted-foreground">{project.category}</span>
             </div>
             <div>
