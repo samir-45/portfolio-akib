@@ -72,15 +72,28 @@ export default function AdminSettings() {
   const saveMutation = useMutation({
     mutationFn: async (data: SettingsForm) => {
       const entries: Record<string, any> = {
-        ...data,
-        trusted_companies: data.trusted_companies.split(",").map((s) => s.trim()).filter(Boolean),
-        skills: data.skills.split(",").map((s) => s.trim()).filter(Boolean),
+        designer_name: data.designer_name,
+        designer_title: data.designer_title,
+        bio: data.bio,
+        bio_extended: data.bio_extended,
+        bio_personal: data.bio_personal,
         years_experience: Number(data.years_experience),
         projects_completed: Number(data.projects_completed),
         happy_clients: Number(data.happy_clients),
+        location: data.location,
+        email: data.email,
+        linkedin: data.linkedin,
+        twitter: data.twitter,
+        dribbble: data.dribbble,
+        behance: data.behance,
+        cv_url: data.cv_url,
+        availability_status: data.availability_status,
+        availability_note: data.availability_note,
+        trusted_companies: data.trusted_companies.split(",").map((s) => s.trim()).filter(Boolean),
+        skills: data.skills.split(",").map((s) => s.trim()).filter(Boolean),
       };
-      if (avatarUrl) entries.avatarUrl = avatarUrl;
       await apiRequest("POST", "/api/admin/settings", { key: "site_profile", value: entries });
+      if (avatarUrl) await apiRequest("POST", "/api/admin/settings", { key: "avatarUrl", value: avatarUrl });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
