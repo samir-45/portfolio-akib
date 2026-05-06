@@ -1,6 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Moon, Sun, Menu, X } from "lucide-react";
-import { useTheme } from "@/lib/theme";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
 const navLinks = [
@@ -12,7 +11,6 @@ const navLinks = [
 ];
 
 export function Navbar() {
-  const { theme, toggleTheme } = useTheme();
   const [location] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -46,25 +44,14 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={toggleTheme}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground hover:text-foreground transition-colors"
-            data-testid="theme-toggle"
-            aria-label="Toggle theme"
-          >
-            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
-          </button>
-
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? <X size={16} /> : <Menu size={16} />}
-          </button>
-        </div>
+        {/* Mobile menu button */}
+        <button
+          className="md:hidden flex h-9 w-9 items-center justify-center rounded-full border border-border bg-background text-muted-foreground"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? <X size={16} /> : <Menu size={16} />}
+        </button>
       </div>
 
       {/* Mobile menu */}
