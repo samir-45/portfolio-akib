@@ -1,0 +1,250 @@
+import { useState, useEffect } from "react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { Save, Upload } from "lucide-react";
+import AdminLayout from "./Layout";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
+
+interface SettingsForm {
+  designer_name: string;
+  designer_title: string;
+  bio: string;
+  bio_extended: string;
+  bio_personal: string;
+  years_experience: number;
+  projects_completed: number;
+  happy_clients: number;
+  location: string;
+  email: string;
+  linkedin: string;
+  twitter: string;
+  dribbble: string;
+  behance: string;
+  cv_url: string;
+  availability_status: string;
+  availability_note: string;
+  trusted_companies: string;
+  skills: string;
+}
+
+const EMPTY: SettingsForm = {
+  designer_name: "", designer_title: "", bio: "", bio_extended: "", bio_personal: "",
+  years_experience: 5, projects_completed: 50, happy_clients: 20,
+  location: "", email: "", linkedin: "", twitter: "", dribbble: "", behance: "",
+  cv_url: "", availability_status: "", availability_note: "",
+  trusted_companies: "", skills: "",
+};
+
+export default function AdminSettings() {
+  const { toast } = useToast();
+  const { data: settings } = useQuery<Record<string, any>>({ queryKey: ["/api/settings"] });
+  const [form, setForm] = useState<SettingsForm>(EMPTY);
+  const [uploading, setUploading] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState("");
+
+  useEffect(() => {
+    if (settings) {
+      setForm({
+        designer_name: settings.designer_name ?? "",
+        designer_title: settings.designer_title ?? "",
+        bio: settings.bio ?? "",
+        bio_extended: settings.bio_extended ?? "",
+        bio_personal: settings.bio_personal ?? "",
+        years_experience: settings.years_experience ?? 5,
+        projects_completed: settings.projects_completed ?? 50,
+        happy_clients: settings.happy_clients ?? 20,
+        location: settings.location ?? "",
+        email: settings.email ?? "",
+        linkedin: settings.linkedin ?? "",
+        twitter: settings.twitter ?? "",
+        dribbble: settings.dribbble ?? "",
+        behance: settings.behance ?? "",
+        cv_url: settings.cv_url ?? "",
+        availability_status: settings.availability_status ?? "",
+        availability_note: settings.availability_note ?? "",
+        trusted_companies: Array.isArray(settings.trusted_companies) ? settings.trusted_companies.join(", ") : settings.trusted_companies ?? "",
+        skills: Array.isArray(settings.skills) ? settings.skills.join(", ") : settings.skills ?? "",
+      });
+      setAvatarUrl(settings.avatar_url ?? "");
+    }
+  }, [settings]);
+
+  const saveMutation = useMutation({
+    mutationFn: async (data: SettingsForm) => {
+      const entries: Record<string, any> = {
+        ...data,
+        trusted_companies: data.trusted_companies.split(",").map((s) => s.trim()).filter(Boolean),
+        skills: data.skills.split(",").map((s) => s.trim()).filter(Boolean),
+        years_experience: Number(data.years_experience),
+        projects_completed: Number(data.projects_completed),
+        happy_clients: Number(data.happy_clients),
+      };
+      if (avatarUrl) entries.avatar_url = avatarUrl;
+      for (const [key, value] of Object.entries(entries)) {
+        await apiRequest("POST", "/api/admin/settings", { key, value });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
+      toast({ title: "Settings saved!" });
+    },
+    onError: () => toast({ title: "Error saving settings", variant: "destructive" }),
+  });
+
+  const handleUploadAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const fd = new FormData();
+    fd.append("file", file);
+    try {
+      const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
+      const data = await res.json();
+      setAvatarUrl(data.url);
+      toast({ title: "Avatar uploaded" });
+    } catch { toast({ title: "Upload failed", variant: "destructive" }); }
+    finally { setUploading(false); }
+  };
+
+  const set = (key: keyof SettingsForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setForm((f) => ({ ...f, [key]: e.target.value }));
+
+  const inputCls = "px-3 py-2 bg-background border border-border rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 w-full";
+  const textareaCls = `${inputCls} resize-none`;
+
+  return (
+    <AdminLayout title="Settings">
+      <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="max-w-2xl flex flex-col gap-8">
+        {/* Profile */}
+        <div className="bg-card border border-border rounded-2xl p-6">
+          <h2 className="text-base font-bold text-foreground mb-5">Profile</h2>
+          <div className="flex flex-col gap-4">
+            {/* Avatar */}
+            <div className="flex flex-col gap-2">
+              <label className="text-xs font-medium text-foreground">Profile Photo</label>
+              <div className="flex items-center gap-4">
+                {avatarUrl && <img src={avatarUrl} alt="avatar" className="w-16 h-16 rounded-full object-cover border border-border" />}
+                <label className="flex items-center gap-2 px-4 py-2 bg-muted border border-border rounded-xl text-sm cursor-pointer hover:bg-muted/70">
+                  <Upload size={14} /> {uploading ? "Uploading..." : "Upload Photo"}
+                  <input type="file" accept="image/*" className="hidden" onChange={handleUploadAvatar} disabled={uploading} />
+                </label>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-foreground">Name</label>
+                <input value={form.designer_name} onChange={set("designer_name")} className={inputCls} data-testid="setting-name" />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-foreground">Title</label>
+                <input value={form.designer_title} onChange={set("designer_title")} className={inputCls} />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-foreground">Bio</label>
+              <textarea value={form.bio} onChange={set("bio")} rows={3} className={textareaCls} data-testid="setting-bio" />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-foreground">Bio Extended</label>
+              <textarea value={form.bio_extended} onChange={set("bio_extended")} rows={3} className={textareaCls} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-foreground">Personal Note</label>
+              <textarea value={form.bio_personal} onChange={set("bio_personal")} rows={2} className={textareaCls} />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {(["years_experience", "projects_completed", "happy_clients"] as const).map((key) => (
+                <div key={key} className="flex flex-col gap-1.5">
+                  <label className="text-xs font-medium text-foreground capitalize">{key.replace(/_/g, " ")}</label>
+                  <input type="number" value={form[key]} onChange={(e) => setForm((f) => ({ ...f, [key]: +e.target.value }))} className={inputCls} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Contact */}
+        <div className="bg-card border border-border rounded-2xl p-6">
+          <h2 className="text-base font-bold text-foreground mb-5">Contact & Social</h2>
+          <div className="flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-foreground">Email</label>
+                <input type="email" value={form.email} onChange={set("email")} className={inputCls} data-testid="setting-email" />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-foreground">Location</label>
+                <input value={form.location} onChange={set("location")} className={inputCls} />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-foreground">LinkedIn</label>
+                <input value={form.linkedin} onChange={set("linkedin")} placeholder="linkedin.com/in/..." className={inputCls} />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-foreground">Twitter</label>
+                <input value={form.twitter} onChange={set("twitter")} placeholder="@username" className={inputCls} />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-foreground">Dribbble</label>
+                <input value={form.dribbble} onChange={set("dribbble")} className={inputCls} />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-foreground">Behance</label>
+                <input value={form.behance} onChange={set("behance")} className={inputCls} />
+              </div>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-foreground">CV / Resume URL</label>
+              <input value={form.cv_url} onChange={set("cv_url")} className={inputCls} />
+            </div>
+          </div>
+        </div>
+
+        {/* Availability */}
+        <div className="bg-card border border-border rounded-2xl p-6">
+          <h2 className="text-base font-bold text-foreground mb-5">Availability</h2>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-foreground">Status</label>
+              <input value={form.availability_status} onChange={set("availability_status")} placeholder="Currently Available" className={inputCls} />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-foreground">Note</label>
+              <input value={form.availability_note} onChange={set("availability_note")} placeholder="Open for new projects..." className={inputCls} />
+            </div>
+          </div>
+        </div>
+
+        {/* Skills & Companies */}
+        <div className="bg-card border border-border rounded-2xl p-6">
+          <h2 className="text-base font-bold text-foreground mb-5">Skills & Companies</h2>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-foreground">Skills (comma separated)</label>
+              <textarea value={form.skills} onChange={set("skills")} rows={3} className={textareaCls}
+                placeholder="User Research, Wireframing, UI Design..." data-testid="setting-skills" />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium text-foreground">Trusted Companies (comma separated)</label>
+              <input value={form.trusted_companies} onChange={set("trusted_companies")} className={inputCls}
+                placeholder="TechCorp, StartupXYZ, DesignLab" />
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          disabled={saveMutation.isPending}
+          className="flex items-center gap-2 bg-foreground text-background font-semibold px-6 py-3 rounded-xl hover:opacity-90 disabled:opacity-50 transition-opacity w-fit"
+          data-testid="save-settings"
+        >
+          <Save size={16} />
+          {saveMutation.isPending ? "Saving..." : "Save Settings"}
+        </button>
+      </form>
+    </AdminLayout>
+  );
+}
