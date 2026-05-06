@@ -125,50 +125,50 @@ export default function AdminSettings() {
   const set = (key: keyof SettingsForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
 
-  const inputCls = "px-3 py-2 bg-background border border-border rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 w-full";
-  const textareaCls = `${inputCls} resize-none`;
+  const inputCls = "w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20";
+  const textareaCls = `${inputCls} min-h-[96px] resize-y`;
 
   return (
     <AdminLayout title="Settings">
-      <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="max-w-2xl flex flex-col gap-8">
-        <div className="bg-card border border-border rounded-2xl p-6">
+      <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="w-full max-w-none flex flex-col gap-8">
+        <div className="w-full bg-card border border-border rounded-2xl p-6">
           <h2 className="text-base font-bold text-foreground mb-5">Profile</h2>
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-4 w-full">
+            <div className="flex flex-col gap-2 w-full">
               <label className="text-xs font-medium text-foreground">Profile Photo</label>
-              <div className="flex items-center gap-4">
-                {avatarUrl && <img src={avatarUrl} alt="avatar" className="w-16 h-16 rounded-full object-cover border border-border" />}
-                <label className="flex items-center gap-2 px-4 py-2 bg-muted border border-border rounded-xl text-sm cursor-pointer hover:bg-muted/70">
+              <div className="flex flex-col gap-4 w-full sm:flex-row sm:items-center">
+                {avatarUrl && <img src={avatarUrl} alt="avatar" className="h-20 w-20 rounded-full object-cover border border-border" />}
+                <label className="flex w-full sm:w-auto items-center justify-center gap-2 px-4 py-2 bg-muted border border-border rounded-xl text-sm cursor-pointer hover:bg-muted/70">
                   <Upload size={14} /> {uploading ? "Uploading..." : "Upload Photo"}
                   <input type="file" accept="image/*" className="hidden" onChange={handleUploadAvatar} disabled={uploading} />
                 </label>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1.5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <div className="flex flex-col gap-1.5 w-full">
                 <label className="text-xs font-medium text-foreground">Name</label>
                 <input value={form.designer_name} onChange={set("designer_name")} className={inputCls} data-testid="setting-name" />
               </div>
-              <div className="flex flex-col gap-1.5">
+              <div className="flex flex-col gap-1.5 w-full">
                 <label className="text-xs font-medium text-foreground">Title</label>
                 <input value={form.designer_title} onChange={set("designer_title")} className={inputCls} />
               </div>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5 w-full">
               <label className="text-xs font-medium text-foreground">Bio</label>
-              <textarea value={form.bio} onChange={set("bio")} rows={3} className={textareaCls} data-testid="setting-bio" />
+              <textarea value={form.bio} onChange={set("bio")} rows={4} className={textareaCls} data-testid="setting-bio" />
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5 w-full">
               <label className="text-xs font-medium text-foreground">Bio Extended</label>
-              <textarea value={form.bio_extended} onChange={set("bio_extended")} rows={3} className={textareaCls} />
+              <textarea value={form.bio_extended} onChange={set("bio_extended")} rows={4} className={textareaCls} />
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1.5 w-full">
               <label className="text-xs font-medium text-foreground">Personal Note</label>
-              <textarea value={form.bio_personal} onChange={set("bio_personal")} rows={2} className={textareaCls} />
+              <textarea value={form.bio_personal} onChange={set("bio_personal")} rows={3} className={textareaCls} />
             </div>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full">
               {(["years_experience", "projects_completed", "happy_clients"] as const).map((key) => (
-                <div key={key} className="flex flex-col gap-1.5">
+                <div key={key} className="flex flex-col gap-1.5 w-full">
                   <label className="text-xs font-medium text-foreground capitalize">{key.replace(/_/g, " ")}</label>
                   <input type="number" value={form[key]} onChange={(e) => setForm((f) => ({ ...f, [key]: +e.target.value }))} className={inputCls} />
                 </div>
