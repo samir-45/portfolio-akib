@@ -35,22 +35,17 @@ export default function About() {
   const skills: string[] = settings?.skills ?? [];
   const tools: any[] = settings?.tools ?? [];
   const beyondDesign: any[] = settings?.beyond_design ?? [];
+  const avatarImage = settings?.avatarUrl || settings?.avatar_url || heroImagePath;
 
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <div className="pt-16">
-        {/* Hero Bio */}
         <section className="mx-auto max-w-7xl px-6 lg:px-8 py-20 lg:py-28">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-start">
-            {/* Portrait */}
             <div className="relative">
               <div className="overflow-hidden rounded-3xl border border-border bg-muted aspect-[4/5] max-w-md">
-                <img
-                  src={heroImagePath}
-                  alt={name}
-                  className="w-full h-full object-cover object-top"
-                />
+                <img src={avatarImage} alt={name} className="w-full h-full object-cover object-top" />
               </div>
               <div className="absolute bottom-6 right-6 lg:-right-6 bg-card border border-border rounded-2xl px-5 py-4 shadow-lg">
                 <p className="text-3xl font-black text-foreground">{yearsExp}+</p>
@@ -58,7 +53,6 @@ export default function About() {
               </div>
             </div>
 
-            {/* Bio */}
             <div className="flex flex-col gap-6 pt-4">
               <div className="inline-flex items-center gap-2 bg-muted border border-border rounded-full px-4 py-2 w-fit">
                 <span className="text-sm text-muted-foreground">About Me</span>
@@ -69,11 +63,7 @@ export default function About() {
                 {bioExtended && <p>{bioExtended}</p>}
                 {bioPersonal && <p>{bioPersonal}</p>}
               </div>
-              <a
-                href={cvUrl}
-                className="inline-flex items-center gap-2 bg-foreground text-background font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity w-fit"
-                data-testid="download-cv"
-              >
+              <a href={cvUrl} className="inline-flex items-center gap-2 bg-foreground text-background font-semibold px-6 py-3 rounded-xl hover:opacity-90 transition-opacity w-fit" data-testid="download-cv">
                 <Download size={16} />
                 Download CV
               </a>
@@ -81,7 +71,6 @@ export default function About() {
           </div>
         </section>
 
-        {/* Skills */}
         <section className="border-t border-border bg-muted/30 py-20">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mb-10">
@@ -89,15 +78,8 @@ export default function About() {
               <p className="mt-2 text-muted-foreground">A diverse toolkit for solving complex design challenges</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              {(skills.length > 0 ? skills : [
-                "User Research", "Wireframing", "Prototyping", "UI Design",
-                "Design Systems", "Usability Testing", "Information Architecture", "Interaction Design"
-              ]).map((skill: string) => (
-                <span
-                  key={skill}
-                  className="px-4 py-2 bg-card border border-border rounded-full text-sm text-foreground hover:border-foreground/30 transition-colors"
-                  data-testid={`skill-${skill.toLowerCase().replace(/\s+/g, "-")}`}
-                >
+              {(skills.length > 0 ? skills : ["User Research", "Wireframing", "Prototyping", "UI Design", "Design Systems", "Usability Testing", "Information Architecture", "Interaction Design"]).map((skill: string) => (
+                <span key={skill} className="px-4 py-2 bg-card border border-border rounded-full text-sm text-foreground hover:border-foreground/30 transition-colors" data-testid={`skill-${skill.toLowerCase().replace(/\s+/g, "-")}`}>
                   {skill}
                 </span>
               ))}
@@ -105,7 +87,6 @@ export default function About() {
           </div>
         </section>
 
-        {/* Tools */}
         <section className="border-t border-border py-20">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mb-10">
@@ -113,17 +94,8 @@ export default function About() {
               <p className="mt-2 text-muted-foreground">Mastering the right tools to bring ideas to life</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {(tools.length > 0 ? tools : [
-                { name: "Figma", icon: "figma" },
-                { name: "Adobe XD", icon: "adobexd" },
-                { name: "Sketch", icon: "sketch" },
-                { name: "Framer", icon: "framer" },
-              ]).map((tool: any) => (
-                <div
-                  key={tool.name}
-                  className="flex items-center gap-3 p-4 bg-card border border-border rounded-2xl hover:border-foreground/20 transition-colors"
-                  data-testid={`tool-${tool.name.toLowerCase().replace(/\s+/g, "-")}`}
-                >
+              {(tools.length > 0 ? tools : [{ name: "Figma", icon: "figma" }, { name: "Adobe XD", icon: "adobexd" }, { name: "Sketch", icon: "sketch" }, { name: "Framer", icon: "framer" }]).map((tool: any) => (
+                <div key={tool.name} className="flex items-center gap-3 p-4 bg-card border border-border rounded-2xl hover:border-foreground/20 transition-colors" data-testid={`tool-${tool.name.toLowerCase().replace(/\s+/g, "-")}`}>
                   <span className="text-2xl">{TOOL_ICONS[tool.icon] ?? "🔧"}</span>
                   <span className="text-sm font-medium text-foreground">{tool.name}</span>
                 </div>
@@ -132,7 +104,6 @@ export default function About() {
           </div>
         </section>
 
-        {/* Beyond Design */}
         {(beyondDesign.length > 0 || true) && (
           <section className="border-t border-border bg-muted/30 py-20">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -141,15 +112,8 @@ export default function About() {
                 <p className="mt-2 text-muted-foreground">What I do when I'm not designing</p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {(beyondDesign.length > 0 ? beyondDesign : [
-                  { title: "Design Communities", icon: "users" },
-                  { title: "Coffee Brewing", icon: "coffee" },
-                  { title: "Music Production", icon: "music" },
-                ]).map((item: any) => (
-                  <div
-                    key={item.title}
-                    className="flex flex-col items-center gap-3 p-8 bg-card border border-border rounded-3xl hover:border-foreground/20 transition-colors text-center"
-                  >
+                {(beyondDesign.length > 0 ? beyondDesign : [{ title: "Design Communities", icon: "users" }, { title: "Coffee Brewing", icon: "coffee" }, { title: "Music Production", icon: "music" }]).map((item: any) => (
+                  <div key={item.title} className="flex flex-col items-center gap-3 p-8 bg-card border border-border rounded-3xl hover:border-foreground/20 transition-colors text-center">
                     <span className="text-4xl">{BEYOND_ICONS[item.icon] ?? "✨"}</span>
                     <span className="text-sm font-semibold text-foreground">{item.title}</span>
                   </div>
@@ -159,7 +123,6 @@ export default function About() {
           </section>
         )}
 
-        {/* Testimonials */}
         {testimonials.length > 0 && (
           <section className="border-t border-border py-20">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -187,7 +150,6 @@ export default function About() {
           </section>
         )}
       </div>
-
       <Footer />
     </div>
   );
