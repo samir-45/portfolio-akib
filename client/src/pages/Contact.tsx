@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Mail, Linkedin, Clock, Zap, Send, Calendar } from "lucide-react";
-import { SiDribbble } from "react-icons/si";
+import { SiDribbble, SiBehance } from "react-icons/si";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
@@ -50,6 +50,7 @@ export default function Contact() {
   const email = settings?.email ?? "alex@example.com";
   const linkedin = settings?.linkedin ?? "linkedin.com/in/alexmorgan";
   const dribbble = settings?.dribbble ?? "";
+  const behance = settings?.behance ?? "";
   const whatsappNumber = settings?.whatsapp_number ?? "";
   const contactTitle = settings?.contact_title ?? "Get In Touch";
   const contactHeadline = settings?.contact_headline ?? "Let's build something meaningful together";
@@ -132,6 +133,16 @@ export default function Contact() {
                   >
                     <div className="w-9 h-9 rounded-lg bg-pink-500 flex items-center justify-center flex-shrink-0"><SiDribbble size={16} className="text-white" /></div>
                     <div><p className="text-sm font-medium text-foreground">Dribbble</p><p className="text-xs text-muted-foreground">{dribbble || "Add your Dribbble URL in settings"}</p></div>
+                  </a>
+                  <a
+                    href={behance ? (behance.startsWith("http") ? behance : `https://${behance}`) : "#"}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted transition-colors"
+                    data-testid="link-behance"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-blue-700 flex items-center justify-center flex-shrink-0"><SiBehance size={16} className="text-white" /></div>
+                    <div><p className="text-sm font-medium text-foreground">Behance</p><p className="text-xs text-muted-foreground">{behance || "Add your Behance URL in settings"}</p></div>
                   </a>
                 </div>
               </div>
