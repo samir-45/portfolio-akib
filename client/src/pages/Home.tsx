@@ -1,6 +1,7 @@
 import { Link } from "wouter";
 import { ArrowUpRight, ArrowDown, User } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import type { Project } from "@shared/schema";
@@ -71,7 +72,8 @@ function ProjectCard({ project }: { project: Project }) {
 }
 
 export default function Home() {
-  const { data: settings } = useQuery<Record<string, any>>({ queryKey: ["/api/settings"] });
+  const [imgLoaded, setImgLoaded] = useState(false);
+  const { data: settings, isLoading: settingsLoading } = useQuery<Record<string, any>>({ queryKey: ["/api/settings"] });
   const { data: featuredProjects = [], isLoading } = useQuery<Project[]>({ queryKey: ["/api/projects/featured"] });
 
   // Profile
@@ -153,17 +155,30 @@ export default function Home() {
             <div className="relative flex justify-center lg:justify-end animate-fade-in">
               <div className="relative">
                 <div className="absolute -top-4 -right-4 w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 opacity-80" />
-                <div className="relative overflow-hidden rounded-3xl border border-white/10 w-full max-w-md">
-                  {heroImage ? (
-                    <img src={heroImage} alt={name} className="w-full h-auto object-cover object-top max-h-[520px]" />
-                  ) : (
-                    <div className="w-full max-h-[520px] min-h-[380px] flex flex-col items-center justify-center gap-4 bg-white/5">
+                <div className="relative overflow-hidden rounded-3xl border border-white/10 w-full max-w-md min-h-[380px]">
+                  {/* Skeleton shown while settings are loading or while image is fetching */}
+                  {(settingsLoading || (heroImage && !imgLoaded)) && (
+                    <div className="absolute inset-0 z-10 min-h-[380px] bg-white/5 animate-pulse">
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent" />
+                    </div>
+                  )}
+
+                  {!settingsLoading && heroImage ? (
+                    <img
+                      src={heroImage}
+                      alt={name}
+                      onLoad={() => setImgLoaded(true)}
+                      className={`w-full h-auto object-cover object-top max-h-[520px] transition-opacity duration-500 ${imgLoaded ? "opacity-100" : "opacity-0"}`}
+                    />
+                  ) : !settingsLoading && !heroImage ? (
+                    <div className="w-full min-h-[380px] flex flex-col items-center justify-center gap-4 bg-white/5">
                       <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center">
                         <User size={40} className="text-white/30" />
                       </div>
                       <p className="text-sm text-white/30">Upload a photo in Admin → Settings</p>
                     </div>
-                  )}
+                  ) : null}
+
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
                 </div>
                 <div className="absolute -bottom-4 -left-4 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl px-4 py-3">
