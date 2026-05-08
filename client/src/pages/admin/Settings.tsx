@@ -13,6 +13,16 @@ interface SettingsForm {
   bio: string;
   bio_extended: string;
   bio_personal: string;
+  about_title: string;
+  about_headline: string;
+  skills_title: string;
+  skills_subtitle: string;
+  tools_title: string;
+  tools_subtitle: string;
+  beyond_title: string;
+  beyond_subtitle: string;
+  testimonials_title: string;
+  testimonials_subtitle: string;
   years_experience: number;
   projects_completed: number;
   happy_clients: number;
@@ -47,6 +57,9 @@ interface SettingsForm {
 
 const EMPTY: SettingsForm = {
   designer_name: "", designer_title: "", bio: "", bio_extended: "", bio_personal: "",
+  about_title: "", about_headline: "", skills_title: "", skills_subtitle: "",
+  tools_title: "", tools_subtitle: "", beyond_title: "", beyond_subtitle: "",
+  testimonials_title: "", testimonials_subtitle: "",
   years_experience: 5, projects_completed: 50, happy_clients: 20,
   location: "", email: "", linkedin: "", twitter: "", dribbble: "", behance: "", whatsapp_number: "",
   cv_url: "", availability_status: "", availability_note: "",
@@ -97,6 +110,16 @@ export default function AdminSettings() {
       bio: settings.bio ?? "",
       bio_extended: settings.bio_extended ?? "",
       bio_personal: settings.bio_personal ?? "",
+      about_title: settings.about_title ?? "About Me",
+      about_headline: settings.about_headline ?? `Hi, I'm ${settings.designer_name ?? "Alex Morgan"}`,
+      skills_title: settings.skills_title ?? "Skills & Expertise",
+      skills_subtitle: settings.skills_subtitle ?? "A diverse toolkit for solving complex design challenges",
+      tools_title: settings.tools_title ?? "Tools I Use",
+      tools_subtitle: settings.tools_subtitle ?? "Mastering the right tools to bring ideas to life",
+      beyond_title: settings.beyond_title ?? "Beyond Design",
+      beyond_subtitle: settings.beyond_subtitle ?? "What I do when I'm not designing",
+      testimonials_title: settings.testimonials_title ?? "What People Say",
+      testimonials_subtitle: settings.testimonials_subtitle ?? "Feedback from clients and collaborators",
       years_experience: settings.years_experience ?? 5,
       projects_completed: settings.projects_completed ?? 50,
       happy_clients: settings.happy_clients ?? 20,
@@ -139,6 +162,9 @@ export default function AdminSettings() {
       const saves: [string, any][] = [
         ["designer_name", data.designer_name], ["designer_title", data.designer_title], ["bio", data.bio], ["bio_extended", data.bio_extended],
         ["bio_personal", data.bio_personal], ["years_experience", Number(data.years_experience)], ["projects_completed", Number(data.projects_completed)], ["happy_clients", Number(data.happy_clients)],
+        ["about_title", data.about_title], ["about_headline", data.about_headline], ["skills_title", data.skills_title], ["skills_subtitle", data.skills_subtitle],
+        ["tools_title", data.tools_title], ["tools_subtitle", data.tools_subtitle], ["beyond_title", data.beyond_title], ["beyond_subtitle", data.beyond_subtitle],
+        ["testimonials_title", data.testimonials_title], ["testimonials_subtitle", data.testimonials_subtitle],
         ["location", data.location], ["email", data.email], ["linkedin", data.linkedin], ["twitter", data.twitter], ["dribbble", data.dribbble], ["behance", data.behance], ["whatsapp_number", data.whatsapp_number],
         ["cv_url", data.cv_url], ["availability_status", data.availability_status], ["availability_note", data.availability_note],
         ["trusted_companies", data.trusted_companies.split(",").map((s) => s.trim()).filter(Boolean)], ["skills", data.skills.split(",").map((s) => s.trim()).filter(Boolean)],
@@ -196,6 +222,29 @@ export default function AdminSettings() {
           <SettingsField label="Tagline / Subtitle"><textarea value={form.hero_tagline} onChange={set("hero_tagline")} rows={3} className={ta} /></SettingsField>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4"><SettingsField label="Primary CTA Button"><input value={form.hero_cta_primary} onChange={set("hero_cta_primary")} className={inp} placeholder="View Case Studies" /></SettingsField><SettingsField label="Secondary CTA Button"><input value={form.hero_cta_secondary} onChange={set("hero_cta_secondary")} className={inp} placeholder="Contact Me" /></SettingsField></div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3"><SettingsField label="Stat 1 Label"><input value={form.hero_stat1_label} onChange={set("hero_stat1_label")} className={inp} placeholder="Years Experience" /></SettingsField><SettingsField label="Stat 2 Label"><input value={form.hero_stat2_label} onChange={set("hero_stat2_label")} className={inp} placeholder="Projects Completed" /></SettingsField><SettingsField label="Stat 3 Label"><input value={form.hero_stat3_label} onChange={set("hero_stat3_label")} className={inp} placeholder="Happy Clients" /></SettingsField></div>
+        </SettingsSection>
+
+        <SettingsSection title="About Page">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SettingsField label="About Badge"><input value={form.about_title} onChange={set("about_title")} className={inp} placeholder="About Me" /></SettingsField>
+            <SettingsField label="About Headline"><input value={form.about_headline} onChange={set("about_headline")} className={inp} placeholder="Hi, I'm Alex Morgan" /></SettingsField>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SettingsField label="Skills Section Title"><input value={form.skills_title} onChange={set("skills_title")} className={inp} /></SettingsField>
+            <SettingsField label="Skills Section Subtitle"><input value={form.skills_subtitle} onChange={set("skills_subtitle")} className={inp} /></SettingsField>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SettingsField label="Tools Section Title"><input value={form.tools_title} onChange={set("tools_title")} className={inp} /></SettingsField>
+            <SettingsField label="Tools Section Subtitle"><input value={form.tools_subtitle} onChange={set("tools_subtitle")} className={inp} /></SettingsField>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SettingsField label="Beyond Design Title"><input value={form.beyond_title} onChange={set("beyond_title")} className={inp} /></SettingsField>
+            <SettingsField label="Beyond Design Subtitle"><input value={form.beyond_subtitle} onChange={set("beyond_subtitle")} className={inp} /></SettingsField>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <SettingsField label="Testimonials Title"><input value={form.testimonials_title} onChange={set("testimonials_title")} className={inp} /></SettingsField>
+            <SettingsField label="Testimonials Subtitle"><input value={form.testimonials_subtitle} onChange={set("testimonials_subtitle")} className={inp} /></SettingsField>
+          </div>
         </SettingsSection>
 
         <SettingsSection title="Why Work With Me">
