@@ -2,7 +2,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Mail, Linkedin, Twitter, MapPin, Clock, Zap, Send, Calendar } from "lucide-react";
+import { Mail, Linkedin, Clock, Zap, Send, Calendar } from "lucide-react";
+import { SiDribbble } from "react-icons/si";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
@@ -48,10 +49,8 @@ export default function Contact() {
 
   const email = settings?.email ?? "alex@example.com";
   const linkedin = settings?.linkedin ?? "linkedin.com/in/alexmorgan";
-  const twitter = settings?.twitter ?? "@alexmorgan";
-  const location = settings?.location ?? "San Francisco, CA";
-  const availabilityStatus = settings?.availability_status ?? "Currently Available";
-  const availabilityNote = settings?.availability_note ?? "Open for new projects";
+  const dribbble = settings?.dribbble ?? "";
+  const whatsappNumber = settings?.whatsapp_number ?? "";
   const contactTitle = settings?.contact_title ?? "Get In Touch";
   const contactHeadline = settings?.contact_headline ?? "Let's build something meaningful together";
   const contactSubtitle = settings?.contact_subtitle ?? "Have a project in mind? Want to collaborate? Or just want to say hi? I'd love to hear from you.";
@@ -60,6 +59,10 @@ export default function Contact() {
   const scheduleTitle = settings?.contact_schedule_title ?? "Prefer a Quick Chat?";
   const scheduleSubtitle = settings?.contact_schedule_subtitle ?? "Sometimes a 15-minute call is all it takes to get started";
   const scheduleButton = settings?.contact_schedule_button ?? "Schedule a Call";
+
+  const whatsappUrl = whatsappNumber
+    ? `https://wa.me/${whatsappNumber.replace(/\D/g, "")}`
+    : "https://wa.me/";
 
   return (
     <div className="min-h-screen bg-background">
@@ -93,29 +96,43 @@ export default function Contact() {
             </div>
 
             <div className="flex flex-col gap-5">
+              {/* Quick Info */}
               <div className="bg-card border border-border rounded-3xl p-6">
                 <h3 className="text-base font-bold text-foreground mb-4">{quickInfoTitle}</h3>
                 <div className="flex flex-col gap-3">
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground"><MapPin size={16} className="text-foreground flex-shrink-0" />Based in {location}</div>
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground"><Clock size={16} className="text-foreground flex-shrink-0" />Available for freelance projects</div>
-                  <div className="flex items-center gap-3 text-sm text-muted-foreground"><Zap size={16} className="text-foreground flex-shrink-0" />Typically respond within 24 hours</div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <Clock size={16} className="text-foreground flex-shrink-0" />
+                    Available for freelance projects
+                  </div>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                    <Zap size={16} className="text-foreground flex-shrink-0" />
+                    Typically respond within 24 hours
+                  </div>
                 </div>
               </div>
 
+              {/* Connect With Me */}
               <div className="bg-card border border-border rounded-3xl p-6">
                 <h3 className="text-base font-bold text-foreground mb-4">{connectTitle}</h3>
                 <div className="flex flex-col gap-3">
-                  <a href={`mailto:${email}`} className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted transition-colors group" data-testid="link-email"><div className="w-9 h-9 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0"><Mail size={16} className="text-white" /></div><div><p className="text-sm font-medium text-foreground">Email</p><p className="text-xs text-muted-foreground">{email}</p></div></a>
-                  <a href={`https://${linkedin}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted transition-colors" data-testid="link-linkedin"><div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0"><Linkedin size={16} className="text-white" /></div><div><p className="text-sm font-medium text-foreground">LinkedIn</p><p className="text-xs text-muted-foreground">{linkedin}</p></div></a>
-                  <a href={`https://twitter.com/${twitter.replace("@", "")}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted transition-colors" data-testid="link-twitter"><div className="w-9 h-9 rounded-lg bg-sky-500 flex items-center justify-center flex-shrink-0"><Twitter size={16} className="text-white" /></div><div><p className="text-sm font-medium text-foreground">Twitter</p><p className="text-xs text-muted-foreground">{twitter}</p></div></a>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 p-4 bg-card border border-border rounded-2xl">
-                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-semibold text-foreground">{availabilityStatus}</p>
-                  <p className="text-xs text-muted-foreground">{availabilityNote}</p>
+                  <a href={`mailto:${email}`} className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted transition-colors group" data-testid="link-email">
+                    <div className="w-9 h-9 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0"><Mail size={16} className="text-white" /></div>
+                    <div><p className="text-sm font-medium text-foreground">Email</p><p className="text-xs text-muted-foreground">{email}</p></div>
+                  </a>
+                  <a href={`https://${linkedin}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted transition-colors" data-testid="link-linkedin">
+                    <div className="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0"><Linkedin size={16} className="text-white" /></div>
+                    <div><p className="text-sm font-medium text-foreground">LinkedIn</p><p className="text-xs text-muted-foreground">{linkedin}</p></div>
+                  </a>
+                  <a
+                    href={dribbble ? (dribbble.startsWith("http") ? dribbble : `https://${dribbble}`) : "#"}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-muted transition-colors"
+                    data-testid="link-dribbble"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-pink-500 flex items-center justify-center flex-shrink-0"><SiDribbble size={16} className="text-white" /></div>
+                    <div><p className="text-sm font-medium text-foreground">Dribbble</p><p className="text-xs text-muted-foreground">{dribbble || "Add your Dribbble URL in settings"}</p></div>
+                  </a>
                 </div>
               </div>
             </div>
@@ -126,10 +143,16 @@ export default function Contact() {
           <div className="border border-border rounded-3xl p-10 text-center bg-muted/30">
             <h2 className="text-2xl font-bold text-foreground mb-2">{scheduleTitle}</h2>
             <p className="text-muted-foreground mb-6">{scheduleSubtitle}</p>
-            <button className="inline-flex items-center gap-2 border border-border bg-background text-foreground font-medium px-6 py-3 rounded-xl hover:bg-muted transition-colors" data-testid="button-schedule-call">
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 border border-border bg-background text-foreground font-medium px-6 py-3 rounded-xl hover:bg-muted transition-colors"
+              data-testid="button-schedule-call"
+            >
               <Calendar size={16} />
               {scheduleButton}
-            </button>
+            </a>
           </div>
         </section>
       </div>

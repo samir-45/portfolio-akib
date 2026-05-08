@@ -22,6 +22,7 @@ interface SettingsForm {
   twitter: string;
   dribbble: string;
   behance: string;
+  whatsapp_number: string;
   cv_url: string;
   availability_status: string;
   availability_note: string;
@@ -47,7 +48,7 @@ interface SettingsForm {
 const EMPTY: SettingsForm = {
   designer_name: "", designer_title: "", bio: "", bio_extended: "", bio_personal: "",
   years_experience: 5, projects_completed: 50, happy_clients: 20,
-  location: "", email: "", linkedin: "", twitter: "", dribbble: "", behance: "",
+  location: "", email: "", linkedin: "", twitter: "", dribbble: "", behance: "", whatsapp_number: "",
   cv_url: "", availability_status: "", availability_note: "",
   trusted_companies: "", skills: "",
   hero_heading_prefix: "I design",
@@ -105,6 +106,7 @@ export default function AdminSettings() {
       twitter: settings.twitter ?? "",
       dribbble: settings.dribbble ?? "",
       behance: settings.behance ?? "",
+      whatsapp_number: settings.whatsapp_number ?? "",
       cv_url: settings.cv_url ?? "",
       availability_status: settings.availability_status ?? "",
       availability_note: settings.availability_note ?? "",
@@ -137,7 +139,7 @@ export default function AdminSettings() {
       const saves: [string, any][] = [
         ["designer_name", data.designer_name], ["designer_title", data.designer_title], ["bio", data.bio], ["bio_extended", data.bio_extended],
         ["bio_personal", data.bio_personal], ["years_experience", Number(data.years_experience)], ["projects_completed", Number(data.projects_completed)], ["happy_clients", Number(data.happy_clients)],
-        ["location", data.location], ["email", data.email], ["linkedin", data.linkedin], ["twitter", data.twitter], ["dribbble", data.dribbble], ["behance", data.behance],
+        ["location", data.location], ["email", data.email], ["linkedin", data.linkedin], ["twitter", data.twitter], ["dribbble", data.dribbble], ["behance", data.behance], ["whatsapp_number", data.whatsapp_number],
         ["cv_url", data.cv_url], ["availability_status", data.availability_status], ["availability_note", data.availability_note],
         ["trusted_companies", data.trusted_companies.split(",").map((s) => s.trim()).filter(Boolean)], ["skills", data.skills.split(",").map((s) => s.trim()).filter(Boolean)],
         ["hero_heading_prefix", data.hero_heading_prefix], ["hero_heading_gradient", data.hero_heading_gradient], ["hero_heading_suffix", data.hero_heading_suffix],
@@ -213,6 +215,7 @@ export default function AdminSettings() {
         <SettingsSection title="Contact & Social">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4"><SettingsField label="Location"><input value={form.location} onChange={set("location")} className={inp} /></SettingsField><SettingsField label="Email"><input type="email" value={form.email} onChange={set("email")} className={inp} /></SettingsField></div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4"><SettingsField label="LinkedIn URL"><input value={form.linkedin} onChange={set("linkedin")} className={inp} /></SettingsField><SettingsField label="Twitter / X"><input value={form.twitter} onChange={set("twitter")} className={inp} /></SettingsField><SettingsField label="Dribbble URL"><input value={form.dribbble} onChange={set("dribbble")} className={inp} /></SettingsField><SettingsField label="Behance URL"><input value={form.behance} onChange={set("behance")} className={inp} /></SettingsField></div>
+          <SettingsField label="WhatsApp Number"><input value={form.whatsapp_number} onChange={set("whatsapp_number")} className={inp} placeholder="e.g. 14155552671 (country code + number, no + or spaces)" data-testid="setting-whatsapp" /></SettingsField>
           <SettingsField label="CV / Resume URL"><input value={form.cv_url} onChange={set("cv_url")} className={inp} /></SettingsField>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4"><SettingsField label="Availability Status"><input value={form.availability_status} onChange={set("availability_status")} className={inp} placeholder="Currently Available" /></SettingsField><SettingsField label="Availability Note"><input value={form.availability_note} onChange={set("availability_note")} className={inp} /></SettingsField></div>
           <SettingsField label="Trusted Companies (comma separated)"><input value={form.trusted_companies} onChange={set("trusted_companies")} className={inp} placeholder="TechCorp, StartupXYZ, DesignLab" /></SettingsField>
