@@ -31,11 +31,9 @@ export async function comparePasswords(supplied: string, stored: string): Promis
 }
 
 export interface IStorage {
-  // Users
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  // Projects
   getProjects(): Promise<Project[]>;
   getFeaturedProjects(): Promise<Project[]>;
   getProjectBySlug(slug: string): Promise<Project | undefined>;
@@ -43,31 +41,26 @@ export interface IStorage {
   createProject(project: InsertProject): Promise<Project>;
   updateProject(id: string, project: Partial<InsertProject>): Promise<Project | undefined>;
   deleteProject(id: string): Promise<void>;
-  // Playground
   getPlaygroundItems(): Promise<PlaygroundItem[]>;
   getPlaygroundItem(id: string): Promise<PlaygroundItem | undefined>;
   createPlaygroundItem(item: InsertPlaygroundItem): Promise<PlaygroundItem>;
   updatePlaygroundItem(id: string, item: Partial<InsertPlaygroundItem>): Promise<PlaygroundItem | undefined>;
   deletePlaygroundItem(id: string): Promise<void>;
-  // Process Steps
   getProcessSteps(): Promise<ProcessStep[]>;
   getProcessStep(id: string): Promise<ProcessStep | undefined>;
   createProcessStep(step: InsertProcessStep): Promise<ProcessStep>;
   updateProcessStep(id: string, step: Partial<InsertProcessStep>): Promise<ProcessStep | undefined>;
   deleteProcessStep(id: string): Promise<void>;
-  // Testimonials
   getTestimonials(): Promise<Testimonial[]>;
   getTestimonial(id: string): Promise<Testimonial | undefined>;
   createTestimonial(t: InsertTestimonial): Promise<Testimonial>;
   updateTestimonial(id: string, t: Partial<InsertTestimonial>): Promise<Testimonial | undefined>;
   deleteTestimonial(id: string): Promise<void>;
-  // Contact Messages
   getContactMessages(): Promise<ContactMessage[]>;
   getContactMessage(id: string): Promise<ContactMessage | undefined>;
   createContactMessage(msg: InsertContactMessage): Promise<ContactMessage>;
   markMessageRead(id: string): Promise<void>;
   deleteContactMessage(id: string): Promise<void>;
-  // Site Settings
   getSiteSettings(): Promise<SiteSetting[]>;
   getSiteSetting(key: string): Promise<SiteSetting | undefined>;
   upsertSiteSetting(key: string, value: unknown): Promise<SiteSetting>;
@@ -90,7 +83,7 @@ export class DatabaseStorage implements IStorage {
     return u;
   }
   async createUser(user: InsertUser) {
-    const [u] = await this.db.insert(users).values({ ...user, id: randomUUID() }).returning();
+    const [u] = await this.db.insert(users).values(user).returning();
     return u;
   }
 
@@ -109,11 +102,11 @@ export class DatabaseStorage implements IStorage {
     return p;
   }
   async createProject(project: InsertProject) {
-    const [p] = await this.db.insert(projects).values({ ...project, id: randomUUID() }).returning();
+    const [p] = await this.db.insert(projects).values({ ...project } as any).returning();
     return p;
   }
   async updateProject(id: string, project: Partial<InsertProject>) {
-    const [p] = await this.db.update(projects).set(project).where(eq(projects.id, id)).returning();
+    const [p] = await this.db.update(projects).set({ ...project } as any).where(eq(projects.id, id)).returning();
     return p;
   }
   async deleteProject(id: string) {
@@ -128,7 +121,7 @@ export class DatabaseStorage implements IStorage {
     return item;
   }
   async createPlaygroundItem(item: InsertPlaygroundItem) {
-    const [i] = await this.db.insert(playgroundItems).values({ ...item, id: randomUUID() }).returning();
+    const [i] = await this.db.insert(playgroundItems).values(item).returning();
     return i;
   }
   async updatePlaygroundItem(id: string, item: Partial<InsertPlaygroundItem>) {
@@ -147,11 +140,11 @@ export class DatabaseStorage implements IStorage {
     return s;
   }
   async createProcessStep(step: InsertProcessStep) {
-    const [s] = await this.db.insert(processSteps).values({ ...step, id: randomUUID() }).returning();
+    const [s] = await this.db.insert(processSteps).values({ ...step } as any).returning();
     return s;
   }
   async updateProcessStep(id: string, step: Partial<InsertProcessStep>) {
-    const [s] = await this.db.update(processSteps).set(step).where(eq(processSteps.id, id)).returning();
+    const [s] = await this.db.update(processSteps).set({ ...step } as any).where(eq(processSteps.id, id)).returning();
     return s;
   }
   async deleteProcessStep(id: string) {
@@ -166,7 +159,7 @@ export class DatabaseStorage implements IStorage {
     return t;
   }
   async createTestimonial(t: InsertTestimonial) {
-    const [item] = await this.db.insert(testimonials).values({ ...t, id: randomUUID() }).returning();
+    const [item] = await this.db.insert(testimonials).values(t).returning();
     return item;
   }
   async updateTestimonial(id: string, t: Partial<InsertTestimonial>) {
@@ -185,7 +178,7 @@ export class DatabaseStorage implements IStorage {
     return m;
   }
   async createContactMessage(msg: InsertContactMessage) {
-    const [m] = await this.db.insert(contactMessages).values({ ...msg, id: randomUUID() }).returning();
+    const [m] = await this.db.insert(contactMessages).values(msg).returning();
     return m;
   }
   async markMessageRead(id: string) {

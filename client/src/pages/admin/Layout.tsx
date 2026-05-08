@@ -23,7 +23,6 @@ interface AdminLayoutProps {
 
 export default function AdminLayout({ children, title }: AdminLayoutProps) {
   const [location] = useLocation();
-
   const { data: user } = useQuery({ queryKey: ["/api/admin/me"] });
 
   const logoutMutation = useMutation({
@@ -36,9 +35,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
 
   return (
     <div className="min-h-screen bg-muted/30 flex">
-      {/* Sidebar */}
       <aside className="w-64 bg-card border-r border-border flex flex-col h-screen sticky top-0 overflow-y-auto">
-        {/* Logo */}
         <div className="p-6 border-b border-border">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center">
@@ -51,7 +48,6 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
           </div>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 p-4 flex flex-col gap-1">
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
             const isActive = location === href;
@@ -60,9 +56,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
                 key={href}
                 href={href}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                  isActive
-                    ? "bg-foreground text-background"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  isActive ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 }`}
                 data-testid={`admin-nav-${label.toLowerCase().replace(/\s+/g, "-")}`}
               >
@@ -74,12 +68,8 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
           })}
         </nav>
 
-        {/* Bottom */}
         <div className="p-4 border-t border-border flex flex-col gap-2">
-          <Link
-            href="/"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-          >
+          <Link href="/" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
             <ArrowLeft size={16} />
             View Portfolio
           </Link>
@@ -94,9 +84,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
         </div>
       </aside>
 
-      {/* Main */}
       <main className="flex-1 flex flex-col min-h-screen">
-        {/* Top bar */}
         <header className="bg-card border-b border-border px-8 py-4 flex items-center justify-between sticky top-0 z-10">
           <h1 className="text-lg font-bold text-foreground">{title}</h1>
           <div className="text-sm text-muted-foreground">

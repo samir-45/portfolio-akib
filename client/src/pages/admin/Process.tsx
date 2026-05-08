@@ -159,9 +159,7 @@ export default function AdminProcess() {
                     </div>
                   </td>
                   <td className="px-5 py-4 font-medium text-foreground">{step.title}</td>
-                  <td className="px-5 py-4 text-muted-foreground max-w-xs">
-                    <p className="truncate">{step.description}</p>
-                  </td>
+                  <td className="px-5 py-4 text-muted-foreground max-w-xs"><p className="truncate">{step.description}</p></td>
                   <td className="px-5 py-4 text-muted-foreground">{step.keyActivities?.length ?? 0} activities</td>
                   <td className="px-5 py-4">
                     <div className="flex items-center justify-end gap-2">
@@ -171,9 +169,7 @@ export default function AdminProcess() {
                   </td>
                 </tr>
               ))}
-              {steps.length === 0 && (
-                <tr><td colSpan={5} className="px-5 py-12 text-center text-muted-foreground">No steps yet. Add your first one!</td></tr>
-              )}
+              {steps.length === 0 && <tr><td colSpan={5} className="px-5 py-12 text-center text-muted-foreground">No steps yet. Add your first one!</td></tr>}
             </tbody>
           </table>
         </div>

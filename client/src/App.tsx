@@ -53,7 +53,6 @@ function Router() {
       <Route path="/playground" component={Playground} />
       <Route path="/contact" component={Contact} />
 
-      {/* Admin routes */}
       <Route path="/admin/login" component={AdminLogin} />
       <Route path="/admin" component={() => <AdminGuard component={AdminDashboard} />} />
       <Route path="/admin/projects" component={() => <AdminGuard component={AdminProjects} />} />

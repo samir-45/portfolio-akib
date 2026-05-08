@@ -25,7 +25,6 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout title="Dashboard">
-      {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         {stats.map(({ label, value, icon: Icon, href, color, badge }) => (
           <Link key={label} href={href} className="bg-card border border-border rounded-2xl p-5 hover:border-foreground/20 transition-colors block">
@@ -50,7 +49,6 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent projects */}
         <div className="bg-card border border-border rounded-2xl p-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-base font-bold text-foreground">Recent Projects</h2>
@@ -77,7 +75,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Recent messages */}
         <div className="bg-card border border-border rounded-2xl p-6">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-base font-bold text-foreground">Recent Messages</h2>
@@ -103,7 +100,6 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Quick links */}
       <div className="mt-6 bg-card border border-border rounded-2xl p-6">
         <h2 className="text-base font-bold text-foreground mb-4">Quick Actions</h2>
         <div className="flex flex-wrap gap-3">
