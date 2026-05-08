@@ -10,7 +10,7 @@ const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/projects", label: "Projects", icon: FolderOpen },
   { href: "/admin/playground", label: "Playground", icon: Gamepad2 },
-  { href: "/admin/process", label: "Process Steps", icon: Footprints },
+  { href: "/admin/process", label: "Process Page", icon: Footprints },
   { href: "/admin/testimonials", label: "Testimonials", icon: Quote },
   { href: "/admin/messages", label: "Messages", icon: MessageSquare },
   { href: "/admin/settings", label: "Settings", icon: Settings },
@@ -52,14 +52,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
             const isActive = location === href;
             return (
-              <Link
-                key={href}
-                href={href}
-                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                  isActive ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                }`}
-                data-testid={`admin-nav-${label.toLowerCase().replace(/\s+/g, "-")}`}
-              >
+              <Link key={href} href={href} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${isActive ? "bg-foreground text-background" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`} data-testid={`admin-nav-${label.toLowerCase().replace(/\s+/g, "-")}`}>
                 <Icon size={16} />
                 {label}
                 {isActive && <ChevronRight size={14} className="ml-auto" />}
@@ -73,11 +66,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
             <ArrowLeft size={16} />
             View Portfolio
           </Link>
-          <button
-            onClick={() => logoutMutation.mutate()}
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors w-full text-left"
-            data-testid="admin-logout"
-          >
+          <button onClick={() => logoutMutation.mutate()} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950 transition-colors w-full text-left" data-testid="admin-logout">
             <LogOut size={16} />
             Logout
           </button>
