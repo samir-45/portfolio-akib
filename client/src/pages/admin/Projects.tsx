@@ -46,15 +46,20 @@ export default function AdminProjects() {
 
   const { data: projects = [], isLoading } = useQuery<Project[]>({ queryKey: ["/api/admin/projects"] });
 
+  const resetForm = () => {
+    setForm(EMPTY_FORM);
+    setEditId(null);
+  };
+
   const createMutation = useMutation({
     mutationFn: (data: any) => apiRequest("POST", "/api/admin/projects", data),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/admin/projects"] }); setShowForm(false); setForm(EMPTY_FORM); toast({ title: "Project created" }); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/admin/projects"] }); setShowForm(false); resetForm(); toast({ title: "Project created" }); },
     onError: () => toast({ title: "Error creating project", variant: "destructive" }),
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: any }) => apiRequest("PATCH", `/api/admin/projects/${id}`, data),
-    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/admin/projects"] }); setShowForm(false); setEditId(null); setForm(EMPTY_FORM); toast({ title: "Project updated" }); },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/admin/projects"] }); setShowForm(false); resetForm(); toast({ title: "Project updated" }); },
     onError: () => toast({ title: "Error updating project", variant: "destructive" }),
   });
 
@@ -105,7 +110,7 @@ export default function AdminProjects() {
     try {
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
       const data = await res.json();
-      setForm((f) => ({ ...f, iconUrl: data.url }));
+      setForm((f) => ({ ...f, iconUrl: data.url, iconColor: "" }));
       toast({ title: "Icon uploaded" });
     } catch {
       toast({ title: "Icon upload failed", variant: "destructive" });
@@ -132,7 +137,7 @@ export default function AdminProjects() {
     <AdminLayout title="Projects">
       <div className="flex items-center justify-between mb-6">
         <p className="text-sm text-muted-foreground">{projects.length} project{projects.length !== 1 ? "s" : ""}</p>
-        <button onClick={() => { setShowForm(true); setEditId(null); setForm(EMPTY_FORM); }} className="flex items-center gap-2 bg-foreground text-background text-sm font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-opacity" data-testid="add-project">
+        <button onClick={() => { setShowForm(true); resetForm(); }} className="flex items-center gap-2 bg-foreground text-background text-sm font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-opacity" data-testid="add-project">
           <Plus size={16} /> Add Project
         </button>
       </div>
@@ -142,7 +147,7 @@ export default function AdminProjects() {
           <div className="bg-card border border-border rounded-3xl w-full max-w-2xl my-8">
             <div className="flex items-center justify-between p-6 border-b border-border">
               <h2 className="text-lg font-bold text-foreground">{editId ? "Edit Project" : "Add Project"}</h2>
-              <button onClick={() => { setShowForm(false); setEditId(null); }} className="text-muted-foreground hover:text-foreground"><X size={20} /></button>
+              <button onClick={() => { setShowForm(false); resetForm(); }} className="text-muted-foreground hover:text-foreground"><X size={20} /></button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-4">
@@ -174,18 +179,18 @@ export default function AdminProjects() {
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-medium text-foreground">Custom Icon</label>
                 <div className="flex items-center gap-3">
-                  <input value={form.iconUrl} onChange={(e) => setForm((f) => ({ ...f, iconUrl: e.target.value }))} placeholder="https://... or upload below" className="flex-1 px-3 py-2 bg-background border border-border rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20" />
+                  <input value={form.iconUrl} onChange={(e) => setForm((f) => ({ ...f, iconUrl: e.target.value, iconColor: e.target.value ? "" : f.iconColor }))} placeholder="https://... or upload below" className="flex-1 px-3 py-2 bg-background border border-border rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20" />
                   <label className="flex items-center gap-2 px-3 py-2 bg-muted border border-border rounded-xl text-sm cursor-pointer hover:bg-muted/70 transition-colors"><Upload size={14} /> {iconUploading ? "Uploading..." : "Upload"}<input type="file" accept="image/*" className="hidden" onChange={handleIconUpload} disabled={iconUploading} /></label>
                 </div>
                 {form.iconUrl && <div className="mt-2 flex h-20 w-20 items-center justify-center rounded-2xl border border-border bg-muted/30 p-3"><img src={form.iconUrl} alt="icon preview" className="max-h-full max-w-full object-contain" /></div>}
               </div>
               <div className="flex items-center gap-4 flex-wrap">
-                <div className="flex flex-col gap-1.5"><label className="text-xs font-medium text-foreground">Icon Color</label><div className="flex items-center gap-2"><input type="color" value={form.iconColor} onChange={(e) => setForm((f) => ({ ...f, iconColor: e.target.value }))} className="h-8 w-16 rounded cursor-pointer border border-border" /><span className="text-xs text-muted-foreground">{form.iconColor}</span></div></div>
+                <div className="flex flex-col gap-1.5"><label className="text-xs font-medium text-foreground">Icon Color</label><div className="flex items-center gap-2"><input type="color" value={form.iconColor || "#2b7fff"} disabled={!!form.iconUrl} onChange={(e) => setForm((f) => ({ ...f, iconColor: e.target.value }))} className="h-8 w-16 rounded cursor-pointer border border-border disabled:opacity-40" /><span className="text-xs text-muted-foreground">{form.iconUrl ? "Custom icon enabled" : form.iconColor}</span></div></div>
                 <div className="flex flex-col gap-1.5"><label className="text-xs font-medium text-foreground">Sort Order</label><input type="number" value={form.sortOrder} onChange={(e) => setForm((f) => ({ ...f, sortOrder: +e.target.value }))} className="w-20 px-3 py-2 bg-background border border-border rounded-xl text-sm text-foreground focus:outline-none" /></div>
                 <div className="flex items-center gap-2 mt-4"><input type="checkbox" id="featured" checked={form.isFeatured} onChange={(e) => setForm((f) => ({ ...f, isFeatured: e.target.checked }))} className="w-4 h-4 rounded" /><label htmlFor="featured" className="text-sm text-foreground">Featured</label></div>
               </div>
               <div className="flex items-center justify-end gap-3 pt-2 border-t border-border">
-                <button type="button" onClick={() => { setShowForm(false); setEditId(null); }} className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">Cancel</button>
+                <button type="button" onClick={() => { setShowForm(false); resetForm(); }} className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground transition-colors">Cancel</button>
                 <button type="submit" disabled={createMutation.isPending || updateMutation.isPending} className="px-5 py-2 bg-foreground text-background text-sm font-semibold rounded-xl hover:opacity-90 disabled:opacity-50 transition-opacity" data-testid="submit-project">{createMutation.isPending || updateMutation.isPending ? "Saving..." : editId ? "Update" : "Create"}</button>
               </div>
             </form>

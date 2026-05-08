@@ -36,6 +36,16 @@ export default function About() {
   const tools: any[] = settings?.tools ?? [];
   const beyondDesign: any[] = settings?.beyond_design ?? [];
   const avatarImage = settings?.avatarUrl || settings?.avatar_url || heroImagePath;
+  const aboutTitle = settings?.about_title ?? "About Me";
+  const aboutHeadline = settings?.about_headline ?? `Hi, I'm ${name}`;
+  const skillsTitle = settings?.skills_title ?? "Skills & Expertise";
+  const skillsSubtitle = settings?.skills_subtitle ?? "A diverse toolkit for solving complex design challenges";
+  const toolsTitle = settings?.tools_title ?? "Tools I Use";
+  const toolsSubtitle = settings?.tools_subtitle ?? "Mastering the right tools to bring ideas to life";
+  const beyondTitle = settings?.beyond_title ?? "Beyond Design";
+  const beyondSubtitle = settings?.beyond_subtitle ?? "What I do when I'm not designing";
+  const testimonialTitle = settings?.testimonials_title ?? "What People Say";
+  const testimonialSubtitle = settings?.testimonials_subtitle ?? "Feedback from clients and collaborators";
 
   return (
     <div className="min-h-screen bg-background">
@@ -55,9 +65,9 @@ export default function About() {
 
             <div className="flex flex-col gap-6 pt-4">
               <div className="inline-flex items-center gap-2 bg-muted border border-border rounded-full px-4 py-2 w-fit">
-                <span className="text-sm text-muted-foreground">About Me</span>
+                <span className="text-sm text-muted-foreground">{aboutTitle}</span>
               </div>
-              <h1 className="text-4xl lg:text-5xl font-black text-foreground">Hi, I'm {name}</h1>
+              <h1 className="text-4xl lg:text-5xl font-black text-foreground">{aboutHeadline}</h1>
               <div className="flex flex-col gap-4 text-muted-foreground leading-relaxed">
                 {bio && <p>{bio}</p>}
                 {bioExtended && <p>{bioExtended}</p>}
@@ -74,8 +84,8 @@ export default function About() {
         <section className="border-t border-border bg-muted/30 py-20">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mb-10">
-              <h2 className="text-3xl font-black text-foreground">Skills & Expertise</h2>
-              <p className="mt-2 text-muted-foreground">A diverse toolkit for solving complex design challenges</p>
+              <h2 className="text-3xl font-black text-foreground">{skillsTitle}</h2>
+              <p className="mt-2 text-muted-foreground">{skillsSubtitle}</p>
             </div>
             <div className="flex flex-wrap gap-3">
               {(skills.length > 0 ? skills : ["User Research", "Wireframing", "Prototyping", "UI Design", "Design Systems", "Usability Testing", "Information Architecture", "Interaction Design"]).map((skill: string) => (
@@ -90,8 +100,8 @@ export default function About() {
         <section className="border-t border-border py-20">
           <div className="mx-auto max-w-7xl px-6 lg:px-8">
             <div className="mb-10">
-              <h2 className="text-3xl font-black text-foreground">Tools I Use</h2>
-              <p className="mt-2 text-muted-foreground">Mastering the right tools to bring ideas to life</p>
+              <h2 className="text-3xl font-black text-foreground">{toolsTitle}</h2>
+              <p className="mt-2 text-muted-foreground">{toolsSubtitle}</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {(tools.length > 0 ? tools : [{ name: "Figma", icon: "figma" }, { name: "Adobe XD", icon: "adobexd" }, { name: "Sketch", icon: "sketch" }, { name: "Framer", icon: "framer" }]).map((tool: any) => (
@@ -104,31 +114,29 @@ export default function About() {
           </div>
         </section>
 
-        {(beyondDesign.length > 0 || true) && (
-          <section className="border-t border-border bg-muted/30 py-20">
-            <div className="mx-auto max-w-7xl px-6 lg:px-8">
-              <div className="mb-10">
-                <h2 className="text-3xl font-black text-foreground">Beyond Design</h2>
-                <p className="mt-2 text-muted-foreground">What I do when I'm not designing</p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {(beyondDesign.length > 0 ? beyondDesign : [{ title: "Design Communities", icon: "users" }, { title: "Coffee Brewing", icon: "coffee" }, { title: "Music Production", icon: "music" }]).map((item: any) => (
-                  <div key={item.title} className="flex flex-col items-center gap-3 p-8 bg-card border border-border rounded-3xl hover:border-foreground/20 transition-colors text-center">
-                    <span className="text-4xl">{BEYOND_ICONS[item.icon] ?? "✨"}</span>
-                    <span className="text-sm font-semibold text-foreground">{item.title}</span>
-                  </div>
-                ))}
-              </div>
+        <section className="border-t border-border bg-muted/30 py-20">
+          <div className="mx-auto max-w-7xl px-6 lg:px-8">
+            <div className="mb-10">
+              <h2 className="text-3xl font-black text-foreground">{beyondTitle}</h2>
+              <p className="mt-2 text-muted-foreground">{beyondSubtitle}</p>
             </div>
-          </section>
-        )}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {(beyondDesign.length > 0 ? beyondDesign : [{ title: "Design Communities", icon: "users" }, { title: "Coffee Brewing", icon: "coffee" }, { title: "Music Production", icon: "music" }]).map((item: any) => (
+                <div key={item.title} className="flex flex-col items-center gap-3 p-8 bg-card border border-border rounded-3xl hover:border-foreground/20 transition-colors text-center">
+                  <span className="text-4xl">{BEYOND_ICONS[item.icon] ?? "✨"}</span>
+                  <span className="text-sm font-semibold text-foreground">{item.title}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
         {testimonials.length > 0 && (
           <section className="border-t border-border py-20">
             <div className="mx-auto max-w-7xl px-6 lg:px-8">
               <div className="mb-10">
-                <h2 className="text-3xl font-black text-foreground">What People Say</h2>
-                <p className="mt-2 text-muted-foreground">Feedback from clients and collaborators</p>
+                <h2 className="text-3xl font-black text-foreground">{testimonialTitle}</h2>
+                <p className="mt-2 text-muted-foreground">{testimonialSubtitle}</p>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {testimonials.map((t) => (
