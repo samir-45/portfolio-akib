@@ -79,6 +79,12 @@ export const siteSettings = pgTable("site_settings", {
   value: jsonb("value"),
 });
 
+export const playgroundSettings = pgTable("playground_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  key: text("key").notNull().unique(),
+  value: jsonb("value"),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({ username: true, password: true });
 export const insertProjectSchema = createInsertSchema(projects).omit({ id: true, createdAt: true });
 export const insertPlaygroundItemSchema = createInsertSchema(playgroundItems).omit({ id: true, createdAt: true });
@@ -86,6 +92,7 @@ export const insertProcessStepSchema = createInsertSchema(processSteps).omit({ i
 export const insertTestimonialSchema = createInsertSchema(testimonials).omit({ id: true });
 export const insertContactMessageSchema = createInsertSchema(contactMessages).omit({ id: true, isRead: true, createdAt: true });
 export const insertSiteSettingSchema = createInsertSchema(siteSettings).omit({ id: true });
+export const insertPlaygroundSettingsSchema = createInsertSchema(playgroundSettings).omit({ id: true });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -101,3 +108,5 @@ export type ContactMessage = typeof contactMessages.$inferSelect;
 export type InsertContactMessage = z.infer<typeof insertContactMessageSchema>;
 export type SiteSetting = typeof siteSettings.$inferSelect;
 export type InsertSiteSetting = z.infer<typeof insertSiteSettingSchema>;
+export type PlaygroundSetting = typeof playgroundSettings.$inferSelect;
+export type InsertPlaygroundSetting = z.infer<typeof insertPlaygroundSettingsSchema>;

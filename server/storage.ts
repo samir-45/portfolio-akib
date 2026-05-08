@@ -2,7 +2,7 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { eq, desc, asc } from "drizzle-orm";
 import pg from "pg";
 import {
-  users, projects, playgroundItems, processSteps, testimonials, contactMessages, siteSettings,
+  users, projects, playgroundItems, processSteps, testimonials, contactMessages, siteSettings, playgroundSettings,
   type User, type InsertUser,
   type Project, type InsertProject,
   type PlaygroundItem, type InsertPlaygroundItem,
@@ -10,6 +10,7 @@ import {
   type Testimonial, type InsertTestimonial,
   type ContactMessage, type InsertContactMessage,
   type SiteSetting, type InsertSiteSetting,
+  type PlaygroundSetting, type InsertPlaygroundSetting,
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
@@ -64,6 +65,9 @@ export interface IStorage {
   getSiteSettings(): Promise<SiteSetting[]>;
   getSiteSetting(key: string): Promise<SiteSetting | undefined>;
   upsertSiteSetting(key: string, value: unknown): Promise<SiteSetting>;
+  getPlaygroundSettings(): Promise<PlaygroundSetting[]>;
+  getPlaygroundSetting(key: string): Promise<PlaygroundSetting | undefined>;
+  upsertPlaygroundSetting(key: string, value: unknown): Promise<PlaygroundSetting>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -202,6 +206,23 @@ export class DatabaseStorage implements IStorage {
       return s;
     }
     const [s] = await this.db.insert(siteSettings).values({ id: randomUUID(), key, value }).returning();
+    return s;
+  }
+
+  async getPlaygroundSettings() {
+    return this.db.select().from(playgroundSettings);
+  }
+  async getPlaygroundSetting(key: string) {
+    const [s] = await this.db.select().from(playgroundSettings).where(eq(playgroundSettings.key, key));
+    return s;
+  }
+  async upsertPlaygroundSetting(key: string, value: unknown) {
+    const existing = await this.getPlaygroundSetting(key);
+    if (existing) {
+      const [s] = await this.db.update(playgroundSettings).set({ value }).where(eq(playgroundSettings.key, key)).returning();
+      return s;
+    }
+    const [s] = await this.db.insert(playgroundSettings).values({ id: randomUUID(), key, value }).returning();
     return s;
   }
 }

@@ -63,6 +63,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.get("/api/playground", async (_req, res) => {
     res.json(await storage.getPlaygroundItems());
   });
+  app.get("/api/playground/settings", async (_req, res) => {
+    const settings = await storage.getPlaygroundSettings();
+    const obj: Record<string, unknown> = {};
+    for (const s of settings) obj[s.key] = s.value;
+    res.json(obj);
+  });
 
   // Process Steps
   app.get("/api/process", async (_req, res) => {
@@ -130,12 +136,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     res.json(await storage.createProject(parsed.data));
   });
   app.patch("/api/admin/projects/:id", isAdmin, async (req, res) => {
-    const p = await storage.updateProject(req.params.id, req.body);
+    const p = await storage.updateProject(String(req.params.id), req.body);
     if (!p) return res.status(404).json({ message: "Not found" });
     res.json(p);
   });
   app.delete("/api/admin/projects/:id", isAdmin, async (req, res) => {
-    await storage.deleteProject(req.params.id);
+    await storage.deleteProject(String(req.params.id));
     res.json({ message: "Deleted" });
   });
 
@@ -143,19 +149,30 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.get("/api/admin/playground", isAdmin, async (_req, res) => {
     res.json(await storage.getPlaygroundItems());
   });
+  app.get("/api/admin/playground/settings", isAdmin, async (_req, res) => {
+    const settings = await storage.getPlaygroundSettings();
+    const obj: Record<string, unknown> = {};
+    for (const s of settings) obj[s.key] = s.value;
+    res.json(obj);
+  });
   app.post("/api/admin/playground", isAdmin, async (req, res) => {
     const parsed = insertPlaygroundItemSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ message: "Invalid data", errors: parsed.error.errors });
     res.json(await storage.createPlaygroundItem(parsed.data));
   });
   app.patch("/api/admin/playground/:id", isAdmin, async (req, res) => {
-    const p = await storage.updatePlaygroundItem(req.params.id, req.body);
+    const p = await storage.updatePlaygroundItem(String(req.params.id), req.body);
     if (!p) return res.status(404).json({ message: "Not found" });
     res.json(p);
   });
   app.delete("/api/admin/playground/:id", isAdmin, async (req, res) => {
-    await storage.deletePlaygroundItem(req.params.id);
+    await storage.deletePlaygroundItem(String(req.params.id));
     res.json({ message: "Deleted" });
+  });
+  app.post("/api/admin/playground/settings", isAdmin, async (req, res) => {
+    const { key, value } = req.body;
+    if (!key) return res.status(400).json({ message: "Key required" });
+    res.json(await storage.upsertPlaygroundSetting(key, value));
   });
 
   // Admin Process Steps
@@ -168,12 +185,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     res.json(await storage.createProcessStep(parsed.data));
   });
   app.patch("/api/admin/process/:id", isAdmin, async (req, res) => {
-    const s = await storage.updateProcessStep(req.params.id, req.body);
+    const s = await storage.updateProcessStep(String(req.params.id), req.body);
     if (!s) return res.status(404).json({ message: "Not found" });
     res.json(s);
   });
   app.delete("/api/admin/process/:id", isAdmin, async (req, res) => {
-    await storage.deleteProcessStep(req.params.id);
+    await storage.deleteProcessStep(String(req.params.id));
     res.json({ message: "Deleted" });
   });
 
@@ -187,12 +204,12 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     res.json(await storage.createTestimonial(parsed.data));
   });
   app.patch("/api/admin/testimonials/:id", isAdmin, async (req, res) => {
-    const t = await storage.updateTestimonial(req.params.id, req.body);
+    const t = await storage.updateTestimonial(String(req.params.id), req.body);
     if (!t) return res.status(404).json({ message: "Not found" });
     res.json(t);
   });
   app.delete("/api/admin/testimonials/:id", isAdmin, async (req, res) => {
-    await storage.deleteTestimonial(req.params.id);
+    await storage.deleteTestimonial(String(req.params.id));
     res.json({ message: "Deleted" });
   });
 
@@ -201,11 +218,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     res.json(await storage.getContactMessages());
   });
   app.patch("/api/admin/messages/:id/read", isAdmin, async (req, res) => {
-    await storage.markMessageRead(req.params.id);
+    await storage.markMessageRead(String(req.params.id));
     res.json({ message: "Marked as read" });
   });
   app.delete("/api/admin/messages/:id", isAdmin, async (req, res) => {
-    await storage.deleteContactMessage(req.params.id);
+    await storage.deleteContactMessage(String(req.params.id));
     res.json({ message: "Deleted" });
   });
 
