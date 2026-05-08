@@ -100,7 +100,14 @@ export default function AdminPlayground() {
 
   const handleEdit = (item: PlaygroundItem) => {
     setEditId(item.id);
-    setForm({ title: item.title, category: item.category, description: item.description ?? "", imageUrl: item.imageUrl ?? "", link: item.link ?? "", sortOrder: item.sortOrder ?? 0 });
+    setForm({
+      title: item.title,
+      category: item.category,
+      description: item.description ?? "",
+      imageUrl: item.imageUrl ?? "",
+      link: item.link ?? "",
+      sortOrder: item.sortOrder ?? 0,
+    });
     setShowForm(true);
   };
 
@@ -121,7 +128,12 @@ export default function AdminPlayground() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { ...form, sortOrder: Number(form.sortOrder), imageUrl: form.imageUrl || null, link: form.link || null };
+    const payload = {
+      ...form,
+      sortOrder: Number(form.sortOrder),
+      imageUrl: form.imageUrl || null,
+      link: form.link || null,
+    };
     if (editId) updateMut.mutate({ id: editId, data: payload });
     else createMut.mutate(payload);
   };
