@@ -38,6 +38,10 @@ interface SettingsForm {
   hero_stat3_label: string;
   why_work_title: string;
   why_work_subtitle: string;
+  process_title: string;
+  process_subtitle: string;
+  process_cta_title: string;
+  process_cta_subtitle: string;
 }
 
 const EMPTY: SettingsForm = {
@@ -57,6 +61,10 @@ const EMPTY: SettingsForm = {
   hero_stat3_label: "Happy Clients",
   why_work_title: "Why Work With Me",
   why_work_subtitle: "I combine design thinking with business strategy to create products that users love and companies profit from",
+  process_title: "My Design Process",
+  process_subtitle: "A structured yet flexible approach to solving complex design challenges. Every project is unique, but these core principles guide my work.",
+  process_cta_title: "Ready to work together?",
+  process_cta_subtitle: "Let's discuss how my process can help solve your design challenges",
 };
 
 const DEFAULT_WHY_CARDS: WhyCard[] = [
@@ -66,21 +74,10 @@ const DEFAULT_WHY_CARDS: WhyCard[] = [
 ];
 
 function SettingsSection({ title, children }: { title: string; children: ReactNode }) {
-  return (
-    <div className="w-full bg-card border border-border rounded-2xl p-6">
-      <h2 className="text-base font-bold text-foreground mb-5">{title}</h2>
-      <div className="flex flex-col gap-4 w-full">{children}</div>
-    </div>
-  );
+  return <div className="w-full bg-card border border-border rounded-2xl p-6"><h2 className="text-base font-bold text-foreground mb-5">{title}</h2><div className="flex flex-col gap-4 w-full">{children}</div></div>;
 }
-
 function SettingsField({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <div className="flex flex-col gap-1.5 w-full">
-      <label className="text-xs font-medium text-muted-foreground">{label}</label>
-      {children}
-    </div>
-  );
+  return <div className="flex flex-col gap-1.5 w-full"><label className="text-xs font-medium text-muted-foreground">{label}</label>{children}</div>;
 }
 
 export default function AdminSettings() {
@@ -124,70 +121,42 @@ export default function AdminSettings() {
       hero_stat3_label: settings.hero_stat3_label ?? "Happy Clients",
       why_work_title: settings.why_work_title ?? "Why Work With Me",
       why_work_subtitle: settings.why_work_subtitle ?? "I combine design thinking with business strategy to create products that users love and companies profit from",
+      process_title: settings.process_title ?? "My Design Process",
+      process_subtitle: settings.process_subtitle ?? "A structured yet flexible approach to solving complex design challenges. Every project is unique, but these core principles guide my work.",
+      process_cta_title: settings.process_cta_title ?? "Ready to work together?",
+      process_cta_subtitle: settings.process_cta_subtitle ?? "Let's discuss how my process can help solve your design challenges",
     });
     setAvatarUrl(settings.avatarUrl ?? settings.avatar_url ?? "");
     if (Array.isArray(settings.why_work_with_me) && settings.why_work_with_me.length > 0) {
-      setWhyCards(
-        settings.why_work_with_me.map((c: any, i: number) => ({
-          title: c.title ?? "",
-          description: c.description ?? "",
-          emoji: c.emoji ?? DEFAULT_WHY_CARDS[i]?.emoji ?? "⭐",
-        }))
-      );
+      setWhyCards(settings.why_work_with_me.map((c: any, i: number) => ({ title: c.title ?? "", description: c.description ?? "", emoji: c.emoji ?? DEFAULT_WHY_CARDS[i]?.emoji ?? "⭐" })));
     }
   }, [settings]);
 
   const saveMutation = useMutation({
     mutationFn: async (data: SettingsForm) => {
       const saves: [string, any][] = [
-        ["designer_name", data.designer_name],
-        ["designer_title", data.designer_title],
-        ["bio", data.bio],
-        ["bio_extended", data.bio_extended],
-        ["bio_personal", data.bio_personal],
-        ["years_experience", Number(data.years_experience)],
-        ["projects_completed", Number(data.projects_completed)],
-        ["happy_clients", Number(data.happy_clients)],
-        ["location", data.location],
-        ["email", data.email],
-        ["linkedin", data.linkedin],
-        ["twitter", data.twitter],
-        ["dribbble", data.dribbble],
-        ["behance", data.behance],
-        ["cv_url", data.cv_url],
-        ["availability_status", data.availability_status],
-        ["availability_note", data.availability_note],
-        ["trusted_companies", data.trusted_companies.split(",").map((s) => s.trim()).filter(Boolean)],
-        ["skills", data.skills.split(",").map((s) => s.trim()).filter(Boolean)],
-        ["hero_heading_prefix", data.hero_heading_prefix],
-        ["hero_heading_gradient", data.hero_heading_gradient],
-        ["hero_heading_suffix", data.hero_heading_suffix],
-        ["hero_tagline", data.hero_tagline],
-        ["hero_cta_primary", data.hero_cta_primary],
-        ["hero_cta_secondary", data.hero_cta_secondary],
-        ["hero_stat1_label", data.hero_stat1_label],
-        ["hero_stat2_label", data.hero_stat2_label],
-        ["hero_stat3_label", data.hero_stat3_label],
-        ["why_work_title", data.why_work_title],
-        ["why_work_subtitle", data.why_work_subtitle],
-        ["why_work_with_me", whyCards],
+        ["designer_name", data.designer_name], ["designer_title", data.designer_title], ["bio", data.bio], ["bio_extended", data.bio_extended],
+        ["bio_personal", data.bio_personal], ["years_experience", Number(data.years_experience)], ["projects_completed", Number(data.projects_completed)], ["happy_clients", Number(data.happy_clients)],
+        ["location", data.location], ["email", data.email], ["linkedin", data.linkedin], ["twitter", data.twitter], ["dribbble", data.dribbble], ["behance", data.behance],
+        ["cv_url", data.cv_url], ["availability_status", data.availability_status], ["availability_note", data.availability_note],
+        ["trusted_companies", data.trusted_companies.split(",").map((s) => s.trim()).filter(Boolean)], ["skills", data.skills.split(",").map((s) => s.trim()).filter(Boolean)],
+        ["hero_heading_prefix", data.hero_heading_prefix], ["hero_heading_gradient", data.hero_heading_gradient], ["hero_heading_suffix", data.hero_heading_suffix],
+        ["hero_tagline", data.hero_tagline], ["hero_cta_primary", data.hero_cta_primary], ["hero_cta_secondary", data.hero_cta_secondary],
+        ["hero_stat1_label", data.hero_stat1_label], ["hero_stat2_label", data.hero_stat2_label], ["hero_stat3_label", data.hero_stat3_label],
+        ["why_work_title", data.why_work_title], ["why_work_subtitle", data.why_work_subtitle], ["why_work_with_me", whyCards],
+        ["process_title", data.process_title], ["process_subtitle", data.process_subtitle], ["process_cta_title", data.process_cta_title], ["process_cta_subtitle", data.process_cta_subtitle],
       ];
       if (avatarUrl) saves.push(["avatarUrl", avatarUrl]);
       await Promise.all(saves.map(([key, value]) => apiRequest("POST", "/api/admin/settings", { key, value })));
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
-      toast({ title: "Settings saved!" });
-    },
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ["/api/settings"] }); toast({ title: "Settings saved!" }); },
     onError: () => toast({ title: "Error saving settings", variant: "destructive" }),
   });
 
   const handleUploadAvatar = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const file = e.target.files?.[0]; if (!file) return;
     setUploading(true);
-    const fd = new FormData();
-    fd.append("file", file);
+    const fd = new FormData(); fd.append("file", file);
     try {
       const res = await fetch("/api/admin/upload", { method: "POST", body: fd });
       const data = await res.json();
@@ -202,12 +171,8 @@ export default function AdminSettings() {
     }
   };
 
-  const set = (key: keyof SettingsForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setForm((f) => ({ ...f, [key]: e.target.value }));
-
-  const setCard = (i: number, field: keyof WhyCard) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setWhyCards((cards) => cards.map((c, idx) => idx === i ? { ...c, [field]: e.target.value } : c));
-
+  const set = (key: keyof SettingsForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm((f) => ({ ...f, [key]: e.target.value }));
+  const setCard = (i: number, field: keyof WhyCard) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setWhyCards((cards) => cards.map((c, idx) => idx === i ? { ...c, [field]: e.target.value } : c));
   const inp = "w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20";
   const ta = `${inp} resize-y min-h-[80px]`;
 
@@ -215,98 +180,47 @@ export default function AdminSettings() {
     <AdminLayout title="Settings">
       <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="w-full flex flex-col gap-8">
         <SettingsSection title="Profile">
-          <div className="flex flex-col gap-2 w-full">
-            <label className="text-xs font-medium text-muted-foreground">Profile Photo</label>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              {avatarUrl && <img src={avatarUrl} alt="avatar" className="h-20 w-20 rounded-full object-cover border border-border" />}
-              <label className="flex w-full sm:w-auto items-center justify-center gap-2 px-4 py-2 bg-muted border border-border rounded-xl text-sm cursor-pointer hover:bg-muted/70">
-                <Upload size={14} /> {uploading ? "Uploading..." : "Upload Photo"}
-                <input type="file" accept="image/*" className="hidden" onChange={handleUploadAvatar} disabled={uploading} />
-              </label>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SettingsField label="Name"><input value={form.designer_name} onChange={set("designer_name")} className={inp} data-testid="setting-name" /></SettingsField>
-            <SettingsField label="Title / Badge"><input value={form.designer_title} onChange={set("designer_title")} className={inp} /></SettingsField>
-          </div>
+          <div className="flex flex-col gap-2 w-full"><label className="text-xs font-medium text-muted-foreground">Profile Photo</label><div className="flex flex-col gap-3 sm:flex-row sm:items-center">{avatarUrl && <img src={avatarUrl} alt="avatar" className="h-20 w-20 rounded-full object-cover border border-border" />}<label className="flex w-full sm:w-auto items-center justify-center gap-2 px-4 py-2 bg-muted border border-border rounded-xl text-sm cursor-pointer hover:bg-muted/70"><Upload size={14} /> {uploading ? "Uploading..." : "Upload Photo"}<input type="file" accept="image/*" className="hidden" onChange={handleUploadAvatar} disabled={uploading} /></label></div></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"><SettingsField label="Name"><input value={form.designer_name} onChange={set("designer_name")} className={inp} data-testid="setting-name" /></SettingsField><SettingsField label="Title / Badge"><input value={form.designer_title} onChange={set("designer_title")} className={inp} /></SettingsField></div>
           <SettingsField label="Bio"><textarea value={form.bio} onChange={set("bio")} rows={4} className={ta} data-testid="setting-bio" /></SettingsField>
           <SettingsField label="Bio Extended"><textarea value={form.bio_extended} onChange={set("bio_extended")} rows={4} className={ta} /></SettingsField>
           <SettingsField label="Personal Note"><textarea value={form.bio_personal} onChange={set("bio_personal")} rows={3} className={ta} /></SettingsField>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <SettingsField label="Years Experience"><input type="number" value={form.years_experience} onChange={(e) => setForm((f) => ({ ...f, years_experience: +e.target.value }))} className={inp} /></SettingsField>
-            <SettingsField label="Projects Completed"><input type="number" value={form.projects_completed} onChange={(e) => setForm((f) => ({ ...f, projects_completed: +e.target.value }))} className={inp} /></SettingsField>
-            <SettingsField label="Happy Clients"><input type="number" value={form.happy_clients} onChange={(e) => setForm((f) => ({ ...f, happy_clients: +e.target.value }))} className={inp} /></SettingsField>
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3"><SettingsField label="Years Experience"><input type="number" value={form.years_experience} onChange={(e) => setForm((f) => ({ ...f, years_experience: +e.target.value }))} className={inp} /></SettingsField><SettingsField label="Projects Completed"><input type="number" value={form.projects_completed} onChange={(e) => setForm((f) => ({ ...f, projects_completed: +e.target.value }))} className={inp} /></SettingsField><SettingsField label="Happy Clients"><input type="number" value={form.happy_clients} onChange={(e) => setForm((f) => ({ ...f, happy_clients: +e.target.value }))} className={inp} /></SettingsField></div>
         </SettingsSection>
 
         <SettingsSection title="Hero Section">
           <p className="text-xs text-muted-foreground -mt-2">Control every piece of text that appears in the homepage hero.</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <SettingsField label="Heading — Line 1 (plain)"><input value={form.hero_heading_prefix} onChange={set("hero_heading_prefix")} className={inp} placeholder="I design" /></SettingsField>
-            <SettingsField label="Heading — Gradient text"><input value={form.hero_heading_gradient} onChange={set("hero_heading_gradient")} className={inp} placeholder="meaningful digital" /></SettingsField>
-            <SettingsField label="Heading — Last line (plain)"><input value={form.hero_heading_suffix} onChange={set("hero_heading_suffix")} className={inp} placeholder="experiences" /></SettingsField>
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4"><SettingsField label="Heading — Line 1 (plain)"><input value={form.hero_heading_prefix} onChange={set("hero_heading_prefix")} className={inp} placeholder="I design" /></SettingsField><SettingsField label="Heading — Gradient text"><input value={form.hero_heading_gradient} onChange={set("hero_heading_gradient")} className={inp} placeholder="meaningful digital" /></SettingsField><SettingsField label="Heading — Last line (plain)"><input value={form.hero_heading_suffix} onChange={set("hero_heading_suffix")} className={inp} placeholder="experiences" /></SettingsField></div>
           <SettingsField label="Tagline / Subtitle"><textarea value={form.hero_tagline} onChange={set("hero_tagline")} rows={3} className={ta} /></SettingsField>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SettingsField label="Primary CTA Button"><input value={form.hero_cta_primary} onChange={set("hero_cta_primary")} className={inp} placeholder="View Case Studies" /></SettingsField>
-            <SettingsField label="Secondary CTA Button"><input value={form.hero_cta_secondary} onChange={set("hero_cta_secondary")} className={inp} placeholder="Contact Me" /></SettingsField>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <SettingsField label="Stat 1 Label"><input value={form.hero_stat1_label} onChange={set("hero_stat1_label")} className={inp} placeholder="Years Experience" /></SettingsField>
-            <SettingsField label="Stat 2 Label"><input value={form.hero_stat2_label} onChange={set("hero_stat2_label")} className={inp} placeholder="Projects Completed" /></SettingsField>
-            <SettingsField label="Stat 3 Label"><input value={form.hero_stat3_label} onChange={set("hero_stat3_label")} className={inp} placeholder="Happy Clients" /></SettingsField>
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"><SettingsField label="Primary CTA Button"><input value={form.hero_cta_primary} onChange={set("hero_cta_primary")} className={inp} placeholder="View Case Studies" /></SettingsField><SettingsField label="Secondary CTA Button"><input value={form.hero_cta_secondary} onChange={set("hero_cta_secondary")} className={inp} placeholder="Contact Me" /></SettingsField></div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3"><SettingsField label="Stat 1 Label"><input value={form.hero_stat1_label} onChange={set("hero_stat1_label")} className={inp} placeholder="Years Experience" /></SettingsField><SettingsField label="Stat 2 Label"><input value={form.hero_stat2_label} onChange={set("hero_stat2_label")} className={inp} placeholder="Projects Completed" /></SettingsField><SettingsField label="Stat 3 Label"><input value={form.hero_stat3_label} onChange={set("hero_stat3_label")} className={inp} placeholder="Happy Clients" /></SettingsField></div>
         </SettingsSection>
 
         <SettingsSection title="Why Work With Me">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"><SettingsField label="Section Title"><input value={form.why_work_title} onChange={set("why_work_title")} className={inp} /></SettingsField><SettingsField label="Section Subtitle"><input value={form.why_work_subtitle} onChange={set("why_work_subtitle")} className={inp} /></SettingsField></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">{whyCards.map((card, i) => (<div key={i} className="flex flex-col gap-3 p-4 rounded-xl border border-border bg-background"><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Card {i + 1}</p><SettingsField label="Emoji Icon"><input value={card.emoji} onChange={setCard(i, "emoji")} className={inp} placeholder="🔍" maxLength={4} /></SettingsField><SettingsField label="Title"><input value={card.title} onChange={setCard(i, "title")} className={inp} /></SettingsField><SettingsField label="Description"><textarea value={card.description} onChange={setCard(i, "description")} rows={3} className={ta} /></SettingsField></div>))}</div>
+        </SettingsSection>
+
+        <SettingsSection title="Process Page">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SettingsField label="Section Title"><input value={form.why_work_title} onChange={set("why_work_title")} className={inp} /></SettingsField>
-            <SettingsField label="Section Subtitle"><input value={form.why_work_subtitle} onChange={set("why_work_subtitle")} className={inp} /></SettingsField>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {whyCards.map((card, i) => (
-              <div key={i} className="flex flex-col gap-3 p-4 rounded-xl border border-border bg-background">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Card {i + 1}</p>
-                <SettingsField label="Emoji Icon"><input value={card.emoji} onChange={setCard(i, "emoji")} className={inp} placeholder="🔍" maxLength={4} /></SettingsField>
-                <SettingsField label="Title"><input value={card.title} onChange={setCard(i, "title")} className={inp} /></SettingsField>
-                <SettingsField label="Description"><textarea value={card.description} onChange={setCard(i, "description")} rows={3} className={ta} /></SettingsField>
-              </div>
-            ))}
+            <SettingsField label="Page Title"><input value={form.process_title} onChange={set("process_title")} className={inp} /></SettingsField>
+            <SettingsField label="Intro Subtitle"><input value={form.process_subtitle} onChange={set("process_subtitle")} className={inp} /></SettingsField>
+            <SettingsField label="CTA Title"><input value={form.process_cta_title} onChange={set("process_cta_title")} className={inp} /></SettingsField>
+            <SettingsField label="CTA Subtitle"><input value={form.process_cta_subtitle} onChange={set("process_cta_subtitle")} className={inp} /></SettingsField>
           </div>
         </SettingsSection>
 
         <SettingsSection title="Contact & Social">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SettingsField label="Location"><input value={form.location} onChange={set("location")} className={inp} /></SettingsField>
-            <SettingsField label="Email"><input type="email" value={form.email} onChange={set("email")} className={inp} /></SettingsField>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SettingsField label="LinkedIn URL"><input value={form.linkedin} onChange={set("linkedin")} className={inp} /></SettingsField>
-            <SettingsField label="Twitter / X"><input value={form.twitter} onChange={set("twitter")} className={inp} /></SettingsField>
-            <SettingsField label="Dribbble URL"><input value={form.dribbble} onChange={set("dribbble")} className={inp} /></SettingsField>
-            <SettingsField label="Behance URL"><input value={form.behance} onChange={set("behance")} className={inp} /></SettingsField>
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"><SettingsField label="Location"><input value={form.location} onChange={set("location")} className={inp} /></SettingsField><SettingsField label="Email"><input type="email" value={form.email} onChange={set("email")} className={inp} /></SettingsField></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"><SettingsField label="LinkedIn URL"><input value={form.linkedin} onChange={set("linkedin")} className={inp} /></SettingsField><SettingsField label="Twitter / X"><input value={form.twitter} onChange={set("twitter")} className={inp} /></SettingsField><SettingsField label="Dribbble URL"><input value={form.dribbble} onChange={set("dribbble")} className={inp} /></SettingsField><SettingsField label="Behance URL"><input value={form.behance} onChange={set("behance")} className={inp} /></SettingsField></div>
           <SettingsField label="CV / Resume URL"><input value={form.cv_url} onChange={set("cv_url")} className={inp} /></SettingsField>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SettingsField label="Availability Status"><input value={form.availability_status} onChange={set("availability_status")} className={inp} placeholder="Currently Available" /></SettingsField>
-            <SettingsField label="Availability Note"><input value={form.availability_note} onChange={set("availability_note")} className={inp} /></SettingsField>
-          </div>
-          <SettingsField label="Trusted Companies (comma separated)">
-            <input value={form.trusted_companies} onChange={set("trusted_companies")} className={inp} placeholder="TechCorp, StartupXYZ, DesignLab" />
-          </SettingsField>
-          <SettingsField label="Skills (comma separated)">
-            <textarea value={form.skills} onChange={set("skills")} rows={3} className={ta} />
-          </SettingsField>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4"><SettingsField label="Availability Status"><input value={form.availability_status} onChange={set("availability_status")} className={inp} placeholder="Currently Available" /></SettingsField><SettingsField label="Availability Note"><input value={form.availability_note} onChange={set("availability_note")} className={inp} /></SettingsField></div>
+          <SettingsField label="Trusted Companies (comma separated)"><input value={form.trusted_companies} onChange={set("trusted_companies")} className={inp} placeholder="TechCorp, StartupXYZ, DesignLab" /></SettingsField>
+          <SettingsField label="Skills (comma separated)"><textarea value={form.skills} onChange={set("skills")} rows={3} className={ta} /></SettingsField>
         </SettingsSection>
 
-        <button
-          type="submit"
-          disabled={saveMutation.isPending}
-          className="flex items-center gap-2 bg-foreground text-background font-semibold px-6 py-3 rounded-xl hover:opacity-90 disabled:opacity-50 transition-opacity w-fit"
-          data-testid="save-settings"
-        >
-          <Save size={16} />
-          {saveMutation.isPending ? "Saving..." : "Save Settings"}
+        <button type="submit" disabled={saveMutation.isPending} className="flex items-center gap-2 bg-foreground text-background font-semibold px-6 py-3 rounded-xl hover:opacity-90 disabled:opacity-50 transition-opacity w-fit" data-testid="save-settings">
+          <Save size={16} /> {saveMutation.isPending ? "Saving..." : "Save Settings"}
         </button>
       </form>
     </AdminLayout>

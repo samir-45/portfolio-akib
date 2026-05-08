@@ -1,7 +1,6 @@
 import { storage, hashPassword } from "./storage";
 
 export async function seedDatabase() {
-  // Seed admin user
   const existing = await storage.getUserByUsername("admin");
   if (!existing) {
     await storage.createUser({
@@ -11,7 +10,6 @@ export async function seedDatabase() {
     console.log("Admin user created: admin / admin123");
   }
 
-  // Seed projects
   const projects = await storage.getProjects();
   if (projects.length === 0) {
     await storage.createProject({
@@ -105,7 +103,6 @@ export async function seedDatabase() {
     });
   }
 
-  // Seed process steps
   const steps = await storage.getProcessSteps();
   if (steps.length === 0) {
     const defaultSteps = [
@@ -128,7 +125,7 @@ export async function seedDatabase() {
       {
         stepNumber: 3,
         title: "Wireframing",
-        description: "Translate strategy into raw-fidelity wireframes, focusing on structure, flow, and core interactions.",
+        description: "Translate strategy into low-fidelity wireframes, focusing on structure, flow, and core interactions.",
         keyActivities: ["Low-fi sketches", "User flow diagrams", "Rapid prototyping", "Internal reviews"],
         color: "#ff6b35",
         sortOrder: 3,
@@ -158,12 +155,9 @@ export async function seedDatabase() {
         sortOrder: 6,
       },
     ];
-    for (const step of defaultSteps) {
-      await storage.createProcessStep(step);
-    }
+    for (const step of defaultSteps) await storage.createProcessStep(step);
   }
 
-  // Seed playground items
   const playground = await storage.getPlaygroundItems();
   if (playground.length === 0) {
     const items = [
@@ -174,12 +168,9 @@ export async function seedDatabase() {
       { title: "Loading State Animations", category: "Micro-interaction", description: "Delightful loading patterns that keep users engaged", sortOrder: 5 },
       { title: "Color Palette Generator", category: "Tool", description: "A tool to generate accessible color palettes", sortOrder: 6 },
     ];
-    for (const item of items) {
-      await storage.createPlaygroundItem({ ...item, imageUrl: null });
-    }
+    for (const item of items) await storage.createPlaygroundItem({ ...item, imageUrl: null });
   }
 
-  // Seed site settings
   const name = await storage.getSiteSetting("designer_name");
   if (!name) {
     await storage.upsertSiteSetting("designer_name", "Alex Morgan");
@@ -222,24 +213,9 @@ export async function seedDatabase() {
     ]);
   }
 
-  // Seed testimonials
   const tList = await storage.getTestimonials();
   if (tList.length === 0) {
-    await storage.createTestimonial({
-      name: "Sarah Johnson",
-      company: "TechCorp",
-      role: "Product Manager",
-      content: "Alex transformed our product experience completely. The research-driven approach led to a 40% increase in user engagement.",
-      avatarUrl: null,
-      sortOrder: 1,
-    });
-    await storage.createTestimonial({
-      name: "Marcus Chen",
-      company: "StartupXYZ",
-      role: "CEO",
-      content: "Working with Alex was a game changer. The design system they built saved our engineering team weeks of work.",
-      avatarUrl: null,
-      sortOrder: 2,
-    });
+    await storage.createTestimonial({ name: "Sarah Johnson", company: "TechCorp", role: "Product Manager", content: "Alex transformed our product experience completely. The research-driven approach led to a 40% increase in user engagement.", avatarUrl: null, sortOrder: 1 });
+    await storage.createTestimonial({ name: "Marcus Chen", company: "StartupXYZ", role: "CEO", content: "Working with Alex was a game changer. The design system they built saved our engineering team weeks of work.", avatarUrl: null, sortOrder: 2 });
   }
 }
