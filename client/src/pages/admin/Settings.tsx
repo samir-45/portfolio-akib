@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Save, Upload } from "lucide-react";
 import AdminLayout from "./Layout";
@@ -64,6 +64,24 @@ const DEFAULT_WHY_CARDS: WhyCard[] = [
   { title: "Fast & scalable systems", description: "Building design systems that grow with your product and accelerate development.", emoji: "⚡" },
   { title: "Business-focused UX", description: "Balancing user needs with business goals to drive measurable results.", emoji: "📈" },
 ];
+
+function SettingsSection({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <div className="w-full bg-card border border-border rounded-2xl p-6">
+      <h2 className="text-base font-bold text-foreground mb-5">{title}</h2>
+      <div className="flex flex-col gap-4 w-full">{children}</div>
+    </div>
+  );
+}
+
+function SettingsField({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1.5 w-full">
+      <label className="text-xs font-medium text-muted-foreground">{label}</label>
+      {children}
+    </div>
+  );
+}
 
 export default function AdminSettings() {
   const { toast } = useToast();
@@ -193,26 +211,10 @@ export default function AdminSettings() {
   const inp = "w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20";
   const ta = `${inp} resize-y min-h-[80px]`;
 
-  const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <div className="w-full bg-card border border-border rounded-2xl p-6">
-      <h2 className="text-base font-bold text-foreground mb-5">{title}</h2>
-      <div className="flex flex-col gap-4 w-full">{children}</div>
-    </div>
-  );
-
-  const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div className="flex flex-col gap-1.5 w-full">
-      <label className="text-xs font-medium text-muted-foreground">{label}</label>
-      {children}
-    </div>
-  );
-
   return (
     <AdminLayout title="Settings">
       <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="w-full flex flex-col gap-8">
-
-        {/* Profile */}
-        <Section title="Profile">
+        <SettingsSection title="Profile">
           <div className="flex flex-col gap-2 w-full">
             <label className="text-xs font-medium text-muted-foreground">Profile Photo</label>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -224,99 +226,78 @@ export default function AdminSettings() {
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="Name"><input value={form.designer_name} onChange={set("designer_name")} className={inp} data-testid="setting-name" /></Field>
-            <Field label="Title / Badge"><input value={form.designer_title} onChange={set("designer_title")} className={inp} /></Field>
+            <SettingsField label="Name"><input value={form.designer_name} onChange={set("designer_name")} className={inp} data-testid="setting-name" /></SettingsField>
+            <SettingsField label="Title / Badge"><input value={form.designer_title} onChange={set("designer_title")} className={inp} /></SettingsField>
           </div>
-          <Field label="Bio"><textarea value={form.bio} onChange={set("bio")} rows={4} className={ta} data-testid="setting-bio" /></Field>
-          <Field label="Bio Extended"><textarea value={form.bio_extended} onChange={set("bio_extended")} rows={4} className={ta} /></Field>
-          <Field label="Personal Note"><textarea value={form.bio_personal} onChange={set("bio_personal")} rows={3} className={ta} /></Field>
+          <SettingsField label="Bio"><textarea value={form.bio} onChange={set("bio")} rows={4} className={ta} data-testid="setting-bio" /></SettingsField>
+          <SettingsField label="Bio Extended"><textarea value={form.bio_extended} onChange={set("bio_extended")} rows={4} className={ta} /></SettingsField>
+          <SettingsField label="Personal Note"><textarea value={form.bio_personal} onChange={set("bio_personal")} rows={3} className={ta} /></SettingsField>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <Field label="Years Experience"><input type="number" value={form.years_experience} onChange={(e) => setForm((f) => ({ ...f, years_experience: +e.target.value }))} className={inp} /></Field>
-            <Field label="Projects Completed"><input type="number" value={form.projects_completed} onChange={(e) => setForm((f) => ({ ...f, projects_completed: +e.target.value }))} className={inp} /></Field>
-            <Field label="Happy Clients"><input type="number" value={form.happy_clients} onChange={(e) => setForm((f) => ({ ...f, happy_clients: +e.target.value }))} className={inp} /></Field>
+            <SettingsField label="Years Experience"><input type="number" value={form.years_experience} onChange={(e) => setForm((f) => ({ ...f, years_experience: +e.target.value }))} className={inp} /></SettingsField>
+            <SettingsField label="Projects Completed"><input type="number" value={form.projects_completed} onChange={(e) => setForm((f) => ({ ...f, projects_completed: +e.target.value }))} className={inp} /></SettingsField>
+            <SettingsField label="Happy Clients"><input type="number" value={form.happy_clients} onChange={(e) => setForm((f) => ({ ...f, happy_clients: +e.target.value }))} className={inp} /></SettingsField>
           </div>
-        </Section>
+        </SettingsSection>
 
-        {/* Hero Section */}
-        <Section title="Hero Section">
+        <SettingsSection title="Hero Section">
           <p className="text-xs text-muted-foreground -mt-2">Control every piece of text that appears in the homepage hero.</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Field label="Heading — Line 1 (plain)">
-              <input value={form.hero_heading_prefix} onChange={set("hero_heading_prefix")} className={inp} placeholder="I design" />
-            </Field>
-            <Field label="Heading — Gradient text">
-              <input value={form.hero_heading_gradient} onChange={set("hero_heading_gradient")} className={inp} placeholder="meaningful digital" />
-            </Field>
-            <Field label="Heading — Last line (plain)">
-              <input value={form.hero_heading_suffix} onChange={set("hero_heading_suffix")} className={inp} placeholder="experiences" />
-            </Field>
+            <SettingsField label="Heading — Line 1 (plain)"><input value={form.hero_heading_prefix} onChange={set("hero_heading_prefix")} className={inp} placeholder="I design" /></SettingsField>
+            <SettingsField label="Heading — Gradient text"><input value={form.hero_heading_gradient} onChange={set("hero_heading_gradient")} className={inp} placeholder="meaningful digital" /></SettingsField>
+            <SettingsField label="Heading — Last line (plain)"><input value={form.hero_heading_suffix} onChange={set("hero_heading_suffix")} className={inp} placeholder="experiences" /></SettingsField>
           </div>
-          <Field label="Tagline / Subtitle">
-            <textarea value={form.hero_tagline} onChange={set("hero_tagline")} rows={3} className={ta} />
-          </Field>
+          <SettingsField label="Tagline / Subtitle"><textarea value={form.hero_tagline} onChange={set("hero_tagline")} rows={3} className={ta} /></SettingsField>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="Primary CTA Button">
-              <input value={form.hero_cta_primary} onChange={set("hero_cta_primary")} className={inp} placeholder="View Case Studies" />
-            </Field>
-            <Field label="Secondary CTA Button">
-              <input value={form.hero_cta_secondary} onChange={set("hero_cta_secondary")} className={inp} placeholder="Contact Me" />
-            </Field>
+            <SettingsField label="Primary CTA Button"><input value={form.hero_cta_primary} onChange={set("hero_cta_primary")} className={inp} placeholder="View Case Studies" /></SettingsField>
+            <SettingsField label="Secondary CTA Button"><input value={form.hero_cta_secondary} onChange={set("hero_cta_secondary")} className={inp} placeholder="Contact Me" /></SettingsField>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <Field label="Stat 1 Label"><input value={form.hero_stat1_label} onChange={set("hero_stat1_label")} className={inp} placeholder="Years Experience" /></Field>
-            <Field label="Stat 2 Label"><input value={form.hero_stat2_label} onChange={set("hero_stat2_label")} className={inp} placeholder="Projects Completed" /></Field>
-            <Field label="Stat 3 Label"><input value={form.hero_stat3_label} onChange={set("hero_stat3_label")} className={inp} placeholder="Happy Clients" /></Field>
+            <SettingsField label="Stat 1 Label"><input value={form.hero_stat1_label} onChange={set("hero_stat1_label")} className={inp} placeholder="Years Experience" /></SettingsField>
+            <SettingsField label="Stat 2 Label"><input value={form.hero_stat2_label} onChange={set("hero_stat2_label")} className={inp} placeholder="Projects Completed" /></SettingsField>
+            <SettingsField label="Stat 3 Label"><input value={form.hero_stat3_label} onChange={set("hero_stat3_label")} className={inp} placeholder="Happy Clients" /></SettingsField>
           </div>
-        </Section>
+        </SettingsSection>
 
-        {/* Why Work With Me */}
-        <Section title="Why Work With Me">
+        <SettingsSection title="Why Work With Me">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="Section Title"><input value={form.why_work_title} onChange={set("why_work_title")} className={inp} /></Field>
-            <Field label="Section Subtitle"><input value={form.why_work_subtitle} onChange={set("why_work_subtitle")} className={inp} /></Field>
+            <SettingsField label="Section Title"><input value={form.why_work_title} onChange={set("why_work_title")} className={inp} /></SettingsField>
+            <SettingsField label="Section Subtitle"><input value={form.why_work_subtitle} onChange={set("why_work_subtitle")} className={inp} /></SettingsField>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {whyCards.map((card, i) => (
               <div key={i} className="flex flex-col gap-3 p-4 rounded-xl border border-border bg-background">
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Card {i + 1}</p>
-                <Field label="Emoji Icon">
-                  <input value={card.emoji} onChange={setCard(i, "emoji")} className={inp} placeholder="🔍" maxLength={4} />
-                </Field>
-                <Field label="Title">
-                  <input value={card.title} onChange={setCard(i, "title")} className={inp} />
-                </Field>
-                <Field label="Description">
-                  <textarea value={card.description} onChange={setCard(i, "description")} rows={3} className={ta} />
-                </Field>
+                <SettingsField label="Emoji Icon"><input value={card.emoji} onChange={setCard(i, "emoji")} className={inp} placeholder="🔍" maxLength={4} /></SettingsField>
+                <SettingsField label="Title"><input value={card.title} onChange={setCard(i, "title")} className={inp} /></SettingsField>
+                <SettingsField label="Description"><textarea value={card.description} onChange={setCard(i, "description")} rows={3} className={ta} /></SettingsField>
               </div>
             ))}
           </div>
-        </Section>
+        </SettingsSection>
 
-        {/* Contact & Social */}
-        <Section title="Contact & Social">
+        <SettingsSection title="Contact & Social">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="Location"><input value={form.location} onChange={set("location")} className={inp} /></Field>
-            <Field label="Email"><input type="email" value={form.email} onChange={set("email")} className={inp} /></Field>
+            <SettingsField label="Location"><input value={form.location} onChange={set("location")} className={inp} /></SettingsField>
+            <SettingsField label="Email"><input type="email" value={form.email} onChange={set("email")} className={inp} /></SettingsField>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="LinkedIn URL"><input value={form.linkedin} onChange={set("linkedin")} className={inp} /></Field>
-            <Field label="Twitter / X"><input value={form.twitter} onChange={set("twitter")} className={inp} /></Field>
-            <Field label="Dribbble URL"><input value={form.dribbble} onChange={set("dribbble")} className={inp} /></Field>
-            <Field label="Behance URL"><input value={form.behance} onChange={set("behance")} className={inp} /></Field>
+            <SettingsField label="LinkedIn URL"><input value={form.linkedin} onChange={set("linkedin")} className={inp} /></SettingsField>
+            <SettingsField label="Twitter / X"><input value={form.twitter} onChange={set("twitter")} className={inp} /></SettingsField>
+            <SettingsField label="Dribbble URL"><input value={form.dribbble} onChange={set("dribbble")} className={inp} /></SettingsField>
+            <SettingsField label="Behance URL"><input value={form.behance} onChange={set("behance")} className={inp} /></SettingsField>
           </div>
-          <Field label="CV / Resume URL"><input value={form.cv_url} onChange={set("cv_url")} className={inp} /></Field>
+          <SettingsField label="CV / Resume URL"><input value={form.cv_url} onChange={set("cv_url")} className={inp} /></SettingsField>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Field label="Availability Status"><input value={form.availability_status} onChange={set("availability_status")} className={inp} placeholder="Currently Available" /></Field>
-            <Field label="Availability Note"><input value={form.availability_note} onChange={set("availability_note")} className={inp} /></Field>
+            <SettingsField label="Availability Status"><input value={form.availability_status} onChange={set("availability_status")} className={inp} placeholder="Currently Available" /></SettingsField>
+            <SettingsField label="Availability Note"><input value={form.availability_note} onChange={set("availability_note")} className={inp} /></SettingsField>
           </div>
-          <Field label="Trusted Companies (comma separated)">
+          <SettingsField label="Trusted Companies (comma separated)">
             <input value={form.trusted_companies} onChange={set("trusted_companies")} className={inp} placeholder="TechCorp, StartupXYZ, DesignLab" />
-          </Field>
-          <Field label="Skills (comma separated)">
+          </SettingsField>
+          <SettingsField label="Skills (comma separated)">
             <textarea value={form.skills} onChange={set("skills")} rows={3} className={ta} />
-          </Field>
-        </Section>
+          </SettingsField>
+        </SettingsSection>
 
         <button
           type="submit"
