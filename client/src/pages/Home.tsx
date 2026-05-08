@@ -1,10 +1,9 @@
 import { Link } from "wouter";
-import { ArrowUpRight, ArrowDown } from "lucide-react";
+import { ArrowUpRight, ArrowDown, User } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import type { Project } from "@shared/schema";
-import heroImagePath from "@assets/UI_Designer_Portfolio_Website_1778060655592.png";
 
 function ProjectCard({ project }: { project: Project }) {
   const colors: Record<string, string> = {
@@ -81,7 +80,7 @@ export default function Home() {
   const yearsExp = settings?.years_experience ?? 5;
   const projectsDone = settings?.projects_completed ?? 50;
   const happyClients = settings?.happy_clients ?? 20;
-  const heroImage = settings?.avatarUrl || settings?.avatar_url || heroImagePath;
+  const heroImage = settings?.avatarUrl || settings?.avatar_url || null;
 
   // Hero text — all editable from admin Settings
   const heroPrefix = settings?.hero_heading_prefix ?? "I design";
@@ -155,8 +154,17 @@ export default function Home() {
               <div className="relative">
                 <div className="absolute -top-4 -right-4 w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-500 opacity-80" />
                 <div className="relative overflow-hidden rounded-3xl border border-white/10 w-full max-w-md">
-                  <img src={heroImage} alt={name} className="w-full h-auto object-cover object-top max-h-[520px]" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  {heroImage ? (
+                    <img src={heroImage} alt={name} className="w-full h-auto object-cover object-top max-h-[520px]" />
+                  ) : (
+                    <div className="w-full max-h-[520px] min-h-[380px] flex flex-col items-center justify-center gap-4 bg-white/5">
+                      <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center">
+                        <User size={40} className="text-white/30" />
+                      </div>
+                      <p className="text-sm text-white/30">Upload a photo in Admin → Settings</p>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
                 </div>
                 <div className="absolute -bottom-4 -left-4 bg-white/10 backdrop-blur-md border border-white/10 rounded-2xl px-4 py-3">
                   <p className="text-2xl font-black text-white">{yearsExp}+</p>
