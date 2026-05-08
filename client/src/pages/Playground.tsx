@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ExternalLink } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import type { PlaygroundItem } from "@shared/schema";
 
-const CATEGORIES = ["All", "UI Concept", "Micro-interaction", "Data Viz", "Tool"];
+const DEFAULT_CATEGORIES = ["UI Concept", "Micro-interaction", "Data Viz", "Tool"];
 const CATEGORY_COLORS: Record<string, string> = {
   "UI Concept": "bg-blue-500/10 text-blue-600 dark:text-blue-400",
   "Micro-interaction": "bg-purple-500/10 text-purple-600 dark:text-purple-400",
@@ -67,6 +67,22 @@ export default function Playground() {
   const { data: pgSettings } = useQuery<Record<string, any>>({ queryKey: ["/api/playground/settings"] });
   const { data: siteSettings } = useQuery<Record<string, any>>({ queryKey: ["/api/settings"] });
 
+  const customCategories = useMemo(() => {
+    const raw = pgSettings?.playground_custom_categories;
+    if (!raw) return [];
+    try {
+      const parsed = typeof raw === "string" ? JSON.parse(raw) : raw;
+      return Array.isArray(parsed) ? parsed.filter((value): value is string => typeof value === "string" && value.trim().length > 0) : [];
+    } catch {
+      return [];
+    }
+  }, [pgSettings?.playground_custom_categories]);
+
+  const categories = useMemo(() => {
+    const itemCategories = items.map((item) => item.category).filter((value, index, array) => array.indexOf(value) === index);
+    return ["All", ...DEFAULT_CATEGORIES, ...customCategories, ...itemCategories].filter((value, index, array) => array.indexOf(value) === index);
+  }, [items, customCategories]);
+
   const filtered = activeCategory === "All" ? items : items.filter((i) => i.category === activeCategory);
 
   // Page text — from playground settings with fallbacks
@@ -97,7 +113,7 @@ export default function Playground() {
         {/* Filter tabs */}
         <div className="mx-auto max-w-7xl px-6 lg:px-8 pb-8">
           <div className="flex flex-wrap items-center gap-2">
-            {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
