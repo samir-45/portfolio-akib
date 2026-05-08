@@ -19,6 +19,8 @@ import AdminLogin from "@/pages/admin/Login";
 import AdminDashboard from "@/pages/admin/Dashboard";
 import AdminProjects from "@/pages/admin/Projects";
 import AdminPlayground from "@/pages/admin/Playground";
+import AdminProcess from "@/pages/admin/Process";
+import AdminTestimonials from "@/pages/admin/Testimonials";
 import AdminMessages from "@/pages/admin/Messages";
 import AdminSettings from "@/pages/admin/Settings";
 
@@ -56,6 +58,8 @@ function Router() {
       <Route path="/admin" component={() => <AdminGuard component={AdminDashboard} />} />
       <Route path="/admin/projects" component={() => <AdminGuard component={AdminProjects} />} />
       <Route path="/admin/playground" component={() => <AdminGuard component={AdminPlayground} />} />
+      <Route path="/admin/process" component={() => <AdminGuard component={AdminProcess} />} />
+      <Route path="/admin/testimonials" component={() => <AdminGuard component={AdminTestimonials} />} />
       <Route path="/admin/messages" component={() => <AdminGuard component={AdminMessages} />} />
       <Route path="/admin/settings" component={() => <AdminGuard component={AdminSettings} />} />
 

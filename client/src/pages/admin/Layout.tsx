@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   LayoutDashboard, FolderOpen, Gamepad2, MessageSquare, Settings,
-  LogOut, ChevronRight, Palette, ArrowLeft
+  LogOut, ChevronRight, Palette, ArrowLeft, Footprints, Quote
 } from "lucide-react";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 
@@ -10,6 +10,8 @@ const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/projects", label: "Projects", icon: FolderOpen },
   { href: "/admin/playground", label: "Playground", icon: Gamepad2 },
+  { href: "/admin/process", label: "Process Steps", icon: Footprints },
+  { href: "/admin/testimonials", label: "Testimonials", icon: Quote },
   { href: "/admin/messages", label: "Messages", icon: MessageSquare },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
@@ -35,7 +37,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
   return (
     <div className="min-h-screen bg-muted/30 flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-card border-r border-border flex flex-col h-screen sticky top-0">
+      <aside className="w-64 bg-card border-r border-border flex flex-col h-screen sticky top-0 overflow-y-auto">
         {/* Logo */}
         <div className="p-6 border-b border-border">
           <div className="flex items-center gap-3">
@@ -62,7 +64,7 @@ export default function AdminLayout({ children, title }: AdminLayoutProps) {
                     ? "bg-foreground text-background"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 }`}
-                data-testid={`admin-nav-${label.toLowerCase()}`}
+                data-testid={`admin-nav-${label.toLowerCase().replace(/\s+/g, "-")}`}
               >
                 <Icon size={16} />
                 {label}
