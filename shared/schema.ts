@@ -39,6 +39,7 @@ export const playgroundItems = pgTable("playground_items", {
   title: text("title").notNull(),
   category: text("category").notNull(),
   imageUrl: text("image_url"),
+  link: text("link"),
   description: text("description"),
   sortOrder: integer("sort_order").default(0),
   createdAt: timestamp("created_at").defaultNow(),

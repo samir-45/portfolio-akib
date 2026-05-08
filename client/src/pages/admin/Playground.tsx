@@ -8,8 +8,8 @@ import type { PlaygroundItem } from "@shared/schema";
 
 const CATEGORIES = ["UI Concept", "Micro-interaction", "Data Viz", "Tool"];
 
-interface FormData { title: string; category: string; description: string; imageUrl: string; sortOrder: number; }
-const EMPTY: FormData = { title: "", category: "UI Concept", description: "", imageUrl: "", sortOrder: 0 };
+interface FormData { title: string; category: string; description: string; imageUrl: string; link: string; sortOrder: number; }
+const EMPTY: FormData = { title: "", category: "UI Concept", description: "", imageUrl: "", link: "", sortOrder: 0 };
 
 interface PageSettings {
   playground_badge: string;
@@ -100,7 +100,7 @@ export default function AdminPlayground() {
 
   const handleEdit = (item: PlaygroundItem) => {
     setEditId(item.id);
-    setForm({ title: item.title, category: item.category, description: item.description ?? "", imageUrl: item.imageUrl ?? "", sortOrder: item.sortOrder ?? 0 });
+    setForm({ title: item.title, category: item.category, description: item.description ?? "", imageUrl: item.imageUrl ?? "", link: item.link ?? "", sortOrder: item.sortOrder ?? 0 });
     setShowForm(true);
   };
 
@@ -121,7 +121,7 @@ export default function AdminPlayground() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { ...form, sortOrder: Number(form.sortOrder), imageUrl: form.imageUrl || null };
+    const payload = { ...form, sortOrder: Number(form.sortOrder), imageUrl: form.imageUrl || null, link: form.link || null };
     if (editId) updateMut.mutate({ id: editId, data: payload });
     else createMut.mutate(payload);
   };
@@ -282,6 +282,11 @@ export default function AdminPlayground() {
                 <label className="text-xs font-medium text-foreground">Description</label>
                 <textarea value={form.description} rows={2} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                   className={`${inp} resize-none`} />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-medium text-foreground">External Link <span className="text-muted-foreground font-normal">(optional — opens when card is clicked)</span></label>
+                <input value={form.link} onChange={(e) => setForm((f) => ({ ...f, link: e.target.value }))}
+                  placeholder="https://dribbble.com/shots/..." className={inp} data-testid="playground-link" />
               </div>
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-medium text-foreground">Image</label>

@@ -20,9 +20,9 @@ const CATEGORY_GRADIENTS: Record<string, string> = {
 };
 
 function PlaygroundCard({ item }: { item: PlaygroundItem }) {
-  return (
+  const cardContent = (
     <div
-      className="group rounded-3xl border border-border bg-card overflow-hidden hover:border-foreground/20 transition-all hover:-translate-y-1"
+      className="group rounded-3xl border border-border bg-card overflow-hidden hover:border-foreground/20 transition-all hover:-translate-y-1 cursor-pointer"
       data-testid={`playground-card-${item.id}`}
     >
       <div className={`relative aspect-[4/3] bg-gradient-to-br ${CATEGORY_GRADIENTS[item.category] ?? "from-muted to-muted/50"} overflow-hidden`}>
@@ -49,6 +49,15 @@ function PlaygroundCard({ item }: { item: PlaygroundItem }) {
       </div>
     </div>
   );
+
+  if (item.link) {
+    return (
+      <a href={item.link} target="_blank" rel="noopener noreferrer">
+        {cardContent}
+      </a>
+    );
+  }
+  return cardContent;
 }
 
 export default function Playground() {
