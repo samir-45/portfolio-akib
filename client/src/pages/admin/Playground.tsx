@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, Upload, X, Settings2, Save } from "lucide-react";
+import { Plus, Pencil, Trash2, Upload, X, Settings2, Save, Tag, Check } from "lucide-react";
 import AdminLayout from "./Layout";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { PlaygroundItem } from "@shared/schema";
 
-const CATEGORIES = ["UI Concept", "Micro-interaction", "Data Viz", "Tool"];
+const DEFAULT_CATEGORIES = ["UI Concept", "Micro-interaction", "Data Viz", "Tool"];
 
 interface FormData { title: string; category: string; description: string; imageUrl: string; link: string; sortOrder: number; }
 const EMPTY: FormData = { title: "", category: "UI Concept", description: "", imageUrl: "", link: "", sortOrder: 0 };
@@ -40,9 +40,24 @@ export default function AdminPlayground() {
   const [pageSettings, setPageSettings] = useState<PageSettings>(DEFAULT_SETTINGS);
   const [settingsSaving, setSettingsSaving] = useState(false);
 
+  // Custom category state
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
+  const [addingCategory, setAddingCategory] = useState(false);
+  const [newCategoryInput, setNewCategoryInput] = useState("");
+
   const { data: items = [], isLoading } = useQuery<PlaygroundItem[]>({ queryKey: ["/api/admin/playground"] });
   const { data: rawSettings } = useQuery<Record<string, any>>({ queryKey: ["/api/admin/playground/settings"] });
   const { data: siteSettings } = useQuery<Record<string, any>>({ queryKey: ["/api/settings"] });
+
+  // Load custom categories from siteSettings
+  useEffect(() => {
+    if (siteSettings?.playground_custom_categories) {
+      try {
+        const parsed = JSON.parse(siteSettings.playground_custom_categories as string);
+        if (Array.isArray(parsed)) setCustomCategories(parsed);
+      } catch { /* ignore */ }
+    }
+  }, [siteSettings]);
 
   useEffect(() => {
     if (rawSettings) {
@@ -64,6 +79,56 @@ export default function AdminPlayground() {
       }));
     }
   }, [rawSettings, siteSettings]);
+
+  // All available categories: defaults + custom + any orphan categories from items
+  const allCategories = [
+    ...DEFAULT_CATEGORIES,
+    ...customCategories.filter((c) => !DEFAULT_CATEGORIES.includes(c)),
+    ...(items as PlaygroundItem[])
+      .map((i) => i.category)
+      .filter((c) => !DEFAULT_CATEGORIES.includes(c) && !customCategories.includes(c))
+      .filter((c, idx, arr) => arr.indexOf(c) === idx),
+  ];
+
+  // Per-category item counts
+  const categoryCounts = allCategories.reduce<Record<string, number>>((acc, cat) => {
+    acc[cat] = (items as PlaygroundItem[]).filter((i) => i.category === cat).length;
+    return acc;
+  }, {});
+
+  // Persist custom categories to siteSettings
+  const saveCustomCategories = async (updated: string[]) => {
+    await apiRequest("POST", "/api/admin/settings", {
+      key: "playground_custom_categories",
+      value: JSON.stringify(updated),
+    });
+    queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
+  };
+
+  const handleAddCategory = async () => {
+    const name = newCategoryInput.trim();
+    if (!name) return;
+    if (allCategories.map((c) => c.toLowerCase()).includes(name.toLowerCase())) {
+      toast({ title: "Category already exists", variant: "destructive" });
+      return;
+    }
+    const updated = [...customCategories, name];
+    setCustomCategories(updated);
+    await saveCustomCategories(updated);
+    setForm((f) => ({ ...f, category: name }));
+    setAddingCategory(false);
+    setNewCategoryInput("");
+    toast({ title: `Category "${name}" added` });
+  };
+
+  const handleDeleteCategory = async (cat: string) => {
+    if (DEFAULT_CATEGORIES.includes(cat)) return;
+    if (categoryCounts[cat] > 0) return;
+    const updated = customCategories.filter((c) => c !== cat);
+    setCustomCategories(updated);
+    await saveCustomCategories(updated);
+    toast({ title: `Category "${cat}" removed` });
+  };
 
   const saveSettings = async () => {
     setSettingsSaving(true);
@@ -108,6 +173,8 @@ export default function AdminPlayground() {
       link: item.link ?? "",
       sortOrder: item.sortOrder ?? 0,
     });
+    setAddingCategory(false);
+    setNewCategoryInput("");
     setShowForm(true);
   };
 
@@ -145,6 +212,9 @@ export default function AdminPlayground() {
     "Tool": "bg-orange-500/10 text-orange-600",
   };
 
+  const getCategoryColor = (cat: string) =>
+    CATEGORY_COLORS[cat] ?? "bg-amber-500/10 text-amber-600";
+
   const inp = "px-3 py-2 bg-background border border-border rounded-xl text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20 w-full";
 
   return (
@@ -172,7 +242,7 @@ export default function AdminPlayground() {
         <>
           <div className="flex items-center justify-between mb-6">
             <p className="text-sm text-muted-foreground">{items.length} item{items.length !== 1 ? "s" : ""}</p>
-            <button onClick={() => { setShowForm(true); setEditId(null); setForm(EMPTY); }}
+            <button onClick={() => { setShowForm(true); setEditId(null); setForm(EMPTY); setAddingCategory(false); setNewCategoryInput(""); }}
               className="flex items-center gap-2 bg-foreground text-background text-sm font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-opacity" data-testid="add-playground-item">
               <Plus size={16} /> Add Item
             </button>
@@ -191,7 +261,7 @@ export default function AdminPlayground() {
                       ? <img src={item.imageUrl} alt={item.title} className="w-full h-full object-cover" />
                       : <div className="absolute inset-0 flex items-center justify-center"><span className="text-3xl font-black text-muted-foreground/20">{item.title.charAt(0)}</span></div>
                     }
-                    <span className={`absolute top-2 left-2 text-xs px-2 py-0.5 rounded-full ${CATEGORY_COLORS[item.category] ?? "bg-muted text-muted-foreground"}`}>{item.category}</span>
+                    <span className={`absolute top-2 left-2 text-xs px-2 py-0.5 rounded-full ${getCategoryColor(item.category)}`}>{item.category}</span>
                   </div>
                   <div className="p-4">
                     <div className="flex items-start justify-between gap-2">
@@ -213,6 +283,41 @@ export default function AdminPlayground() {
               )}
             </div>
           )}
+
+          {/* ── Category Management ── */}
+          <div className="mt-8 rounded-2xl border border-border bg-card p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Tag size={15} className="text-muted-foreground" />
+              <h3 className="text-sm font-semibold text-foreground">Manage Categories</h3>
+              <span className="text-xs text-muted-foreground ml-1">— custom categories with 0 items can be deleted</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {allCategories.map((cat) => {
+                const count = categoryCounts[cat] ?? 0;
+                const isDefault = DEFAULT_CATEGORIES.includes(cat);
+                const canDelete = !isDefault && count === 0;
+                return (
+                  <div key={cat} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium ${getCategoryColor(cat)} border-current/20`}>
+                    <span>{cat}</span>
+                    <span className="opacity-60">({count})</span>
+                    {canDelete && (
+                      <button
+                        onClick={() => handleDeleteCategory(cat)}
+                        className="ml-0.5 opacity-60 hover:opacity-100 transition-opacity"
+                        title={`Delete "${cat}" category`}
+                        data-testid={`delete-category-${cat}`}
+                      >
+                        <X size={11} />
+                      </button>
+                    )}
+                    {isDefault && (
+                      <span className="ml-0.5 opacity-40 text-[10px]">built-in</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </>
       )}
 
@@ -275,7 +380,7 @@ export default function AdminPlayground() {
           <div className="bg-card border border-border rounded-3xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between p-6 border-b border-border">
               <h2 className="text-lg font-bold text-foreground">{editId ? "Edit Item" : "Add Item"}</h2>
-              <button onClick={() => { setShowForm(false); setEditId(null); }}><X size={20} className="text-muted-foreground" /></button>
+              <button onClick={() => { setShowForm(false); setEditId(null); setAddingCategory(false); setNewCategoryInput(""); }}><X size={20} className="text-muted-foreground" /></button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
@@ -283,13 +388,58 @@ export default function AdminPlayground() {
                 <input value={form.title} required onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                   className={inp} data-testid="playground-title" />
               </div>
+
+              {/* Category selector */}
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-medium text-foreground">Category *</label>
-                <select value={form.category} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                  className={inp}>
-                  {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
+                {addingCategory ? (
+                  <div className="flex items-center gap-2">
+                    <input
+                      autoFocus
+                      value={newCategoryInput}
+                      onChange={(e) => setNewCategoryInput(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddCategory(); } if (e.key === "Escape") { setAddingCategory(false); setNewCategoryInput(""); } }}
+                      placeholder="e.g. Motion Design"
+                      className={inp}
+                      data-testid="new-category-input"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddCategory}
+                      className="flex-shrink-0 p-2 bg-foreground text-background rounded-xl hover:opacity-90 transition-opacity"
+                      data-testid="confirm-new-category"
+                    >
+                      <Check size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setAddingCategory(false); setNewCategoryInput(""); }}
+                      className="flex-shrink-0 p-2 border border-border rounded-xl text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      <X size={15} />
+                    </button>
+                  </div>
+                ) : (
+                  <select
+                    value={form.category}
+                    onChange={(e) => {
+                      if (e.target.value === "__add_new__") {
+                        setAddingCategory(true);
+                        setNewCategoryInput("");
+                      } else {
+                        setForm((f) => ({ ...f, category: e.target.value }));
+                      }
+                    }}
+                    className={inp}
+                    data-testid="playground-category"
+                  >
+                    {allCategories.map((c) => <option key={c} value={c}>{c}</option>)}
+                    <option disabled>──────────</option>
+                    <option value="__add_new__">+ Add new category...</option>
+                  </select>
+                )}
               </div>
+
               <div className="flex flex-col gap-1.5">
                 <label className="text-xs font-medium text-foreground">Description</label>
                 <textarea value={form.description} rows={2} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
@@ -319,8 +469,8 @@ export default function AdminPlayground() {
                   className="w-20 px-3 py-2 bg-background border border-border rounded-xl text-sm text-foreground focus:outline-none" />
               </div>
               <div className="flex items-center justify-end gap-3 pt-2 border-t border-border">
-                <button type="button" onClick={() => { setShowForm(false); setEditId(null); }} className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground">Cancel</button>
-                <button type="submit" disabled={createMut.isPending || updateMut.isPending}
+                <button type="button" onClick={() => { setShowForm(false); setEditId(null); setAddingCategory(false); setNewCategoryInput(""); }} className="px-4 py-2 text-sm text-muted-foreground hover:text-foreground">Cancel</button>
+                <button type="submit" disabled={createMut.isPending || updateMut.isPending || addingCategory}
                   className="px-5 py-2 bg-foreground text-background text-sm font-semibold rounded-xl hover:opacity-90 disabled:opacity-50" data-testid="submit-playground">
                   {createMut.isPending || updateMut.isPending ? "Saving..." : editId ? "Update" : "Create"}
                 </button>
